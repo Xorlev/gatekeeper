@@ -15,12 +15,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClusterHandler<T> {
-    private final Collection<ServiceCache<T>> serviceCaches;
+    private Collection<ServiceCache<T>> serviceCaches = Lists.newArrayList();
     private final ConfigWriter configWriter = new ConfigWriter();
     private static final Logger log = LoggerFactory.getLogger(ClusterHandler.class);
 
-    public ClusterHandler(Collection<ServiceCache<T>> clusters) {
-        this.serviceCaches = clusters;
+    public ClusterHandler() {
+    }
+
+    public Collection<ServiceCache<T>> getServiceCaches() {
+        return serviceCaches;
     }
 
     void processClusters() {
@@ -58,7 +61,9 @@ public class ClusterHandler<T> {
         ConfigContext configContext = new ConfigContext(clusters);
 
         for (Cluster cluster: clusters) {
-            configContext.getLocations().add(new Location("/", cluster));
+            for (String context : AppConfig.getStringList("cluster."+cluster.getClusterName()+".context")) {
+                configContext.getLocations().add(new Location(context, cluster));
+            }
         }
         try {
             configWriter.writeConfig(configContext);

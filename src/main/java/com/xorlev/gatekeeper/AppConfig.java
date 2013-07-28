@@ -79,4 +79,10 @@ public class AppConfig implements Serializable {
 
         return listProperty.get();
     }
+
+    public static void addCallback(String property, Runnable callback) {
+        final DynamicProperty dynamicProperty = DynamicProperty.getInstance(property);
+
+        dynamicProperty.addCallback(callback);
+    }
 }

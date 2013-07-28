@@ -31,17 +31,16 @@ public class ZkWatcher {
     private ServiceDiscovery<Void> dsc;
     private List<ServiceCache<Void>> serviceCache = Lists.newArrayList();
 
-    private ClusterHandler clusterHandler;
+    private ClusterHandler<Void> clusterHandler;
 
     private transient boolean run = true;
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public static void main(String[] args) throws Exception {
-        AppConfig.initializeConfiguration("production");
-        new ZkWatcher().start();
+    public ZkWatcher(ClusterHandler<Void> clusterHandler) {
+        this.clusterHandler = clusterHandler;
     }
 
-    private void start() throws Exception {
+    public void start() throws Exception {
         Signal.handle(new Signal("TERM"), new SignalHandler() {
             public void handle(Signal signal) {
                 stop();
@@ -51,7 +50,8 @@ public class ZkWatcher {
 
         setupZookeeper();
         setupServiceDiscovery();
-        clusterHandler = new ClusterHandler<Void>(serviceCache);
+//        clusterHandler = new ClusterHandler<Void>();
+        clusterHandler.getServiceCaches().addAll(serviceCache);
 
         clusterHandler.processClusters();
 
@@ -79,7 +79,7 @@ public class ZkWatcher {
         if (zk != null && zk.getState() == CuratorFrameworkState.STARTED) {
 
             dsc = ServiceDiscoveryBuilder.builder(Void.class)
-                    .basePath("/turbine-aggregate")
+                    .basePath(AppConfig.getString("discoveryPath"))
                     .client(zk)
                     .build();
 
@@ -90,6 +90,11 @@ public class ZkWatcher {
     }
 
     private void initializeServiceCaches() throws Exception {
+        for (ServiceCache<Void> cache : serviceCache) {
+            cache.close();
+            serviceCache.remove(cache);
+        }
+
         for (final String c : AppConfig.getStringList("clusters")) {
             ServiceCache<Void> cache = dsc.serviceCacheBuilder()
                     .name(c)
@@ -107,7 +112,18 @@ public class ZkWatcher {
 
             cache.start();
             serviceCache.add(cache);
+
         }
+        AppConfig.addCallback("clusters", new Runnable() {
+            public void run() {
+                try {
+                    initializeServiceCaches();
+                    clusterHandler.processClusters();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void stop() {
