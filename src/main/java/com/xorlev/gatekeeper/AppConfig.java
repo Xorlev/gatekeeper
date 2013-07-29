@@ -20,22 +20,11 @@ public class AppConfig implements Serializable {
     public static void initializeConfiguration(String environment) {
         log.info("Initializing cascaded config with environment=[{}]", environment);
 
-        if (environment != null) {
-            DeploymentContext deploymentContext = new SimpleDeploymentContext();
-            deploymentContext.setDeploymentEnvironment(environment);
-
-            ConfigurationManager.setDeploymentContext(deploymentContext);
-        }
-
-        try {
-            if (!initialized) {
-                synchronized (AppConfig.class) {
-                    initialized = true;
-                    ConfigurationManager.loadCascadedPropertiesFromResources("gatekeeper");
-                }
+        if (!initialized) {
+            synchronized (AppConfig.class) {
+                initialized = true;
+                DynamicPropertyFactory.getInstance();
             }
-        } catch (IOException e) {
-            log.warn("Unable to load cascaded properties");
         }
     }
 

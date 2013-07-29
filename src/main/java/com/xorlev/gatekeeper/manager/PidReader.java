@@ -5,4 +5,6 @@ package com.xorlev.gatekeeper.manager;
  *
  * @author Michael Rose <michael@fullcontact.com>
  */
-public class PidReader {}
+public class PidReader {
+
+}

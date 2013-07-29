@@ -14,21 +14,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-public class ClusterHandler<T> {
+public class ClusterHandler {
     private final ConfigWriter configWriter = new ConfigWriter();
     private static final Logger log = LoggerFactory.getLogger(ClusterHandler.class);
-
-    public ClusterHandler() {
-    }
 
     void processClusters(List<Cluster> clusterList) {
 
         writeConfig(clusterList);
-    }
-
-    protected Server convertInstance(ServiceInstance<T> instance) {
-        Integer port = instance.getSslPort() != null ? instance.getSslPort() : instance.getPort();
-        return new Server(instance.getAddress(), port);
     }
 
     private void writeConfig(List<Cluster> clusters) {
@@ -44,5 +36,7 @@ public class ClusterHandler<T> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 }

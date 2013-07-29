@@ -13,30 +13,33 @@ public class GatekeeperApplication {
     private String environment = "production";
 
 
+    @Parameter(names = {"--outputPath", "-o"}, description = "NGINX config file (e.x. /etc/nginx/nginx.conf)")
+    private String nginxConfigPath;
 
-    private final ZookeeperClusterProvider zookeeperInstanceProvider;
+
+    @Parameter(names = {"--inputPath", "-i"}, description = "Template for NGINX config")
+    private String nginxTemplatePath;
+
+    @Parameter(names = {"--pidPath", "-p"}, description = "Path to PID file")
+    private String pidPath;
 
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(environment);
 
-        this.zookeeperInstanceProvider = new ZookeeperClusterProvider(new ClusterHandler<Void>());
+        AbstractClusterProvider clusterProvider =
+                (AbstractClusterProvider) Class.forName(AppConfig.getString("cluster_provider.impl"))
+                        .getConstructors()[0].newInstance(new ClusterHandler());
+        clusterProvider.start();
 
-        this.zookeeperInstanceProvider.start();
-    }
+        // spin
 
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
+        clusterProvider.stop();
     }
 
     public static void main(String[] args) throws Exception {
         GatekeeperApplication application = new GatekeeperApplication();
         JCommander jCommander = new JCommander(application, args);
 
-        jCommander.setProgramName("gatekeeper");
-//        jCommander.usage();
+        jCommander.setProgramName(Constants.APP_NAME);
     }
 }

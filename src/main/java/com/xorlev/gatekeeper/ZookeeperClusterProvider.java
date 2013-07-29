@@ -34,14 +34,19 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private transient boolean run = true;
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public ZookeeperClusterProvider(ClusterHandler<Void> clusterHandler) {
+    public ZookeeperClusterProvider(ClusterHandler clusterHandler) {
         super(clusterHandler);
     }
 
+    @Override
     public void start() throws Exception {
         Signal.handle(new Signal("TERM"), new SignalHandler() {
             public void handle(Signal signal) {
-                stop();
+                try {
+                    stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -126,6 +131,7 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     protected List<Cluster> provideClusters() {
         List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
         for (ServiceCache<Void> cache : serviceCacheList) {
+            System.out.println(cache.getInstances());
             if (!cache.getInstances().isEmpty()) {
                 Cluster cluster = buildCluster(cache.getInstances().get(0));
 
@@ -153,7 +159,8 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
         return new Server(instance.getAddress(), port);
     }
 
-    private void stop() {
+    @Override
+    public void stop() throws Exception {
         try {
             log.info("Shutting down...");
             run = false;

@@ -13,11 +13,15 @@ import java.util.List;
  */
 public abstract class AbstractClusterProvider {
     protected static Logger log = LoggerFactory.getLogger(ZookeeperClusterProvider.class);
-    protected ClusterHandler<Void> clusterHandler;
+    protected ClusterHandler clusterHandler;
 
-    public AbstractClusterProvider(ClusterHandler<Void> clusterHandler) {
+    public AbstractClusterProvider(ClusterHandler clusterHandler) {
         this.clusterHandler = clusterHandler;
     }
+
+    public abstract void start() throws Exception;
+
+    public abstract void stop() throws Exception;
 
     protected void updateInstances() {
         List<Cluster> clusterList = provideClusters();
