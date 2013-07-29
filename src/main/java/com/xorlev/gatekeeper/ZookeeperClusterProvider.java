@@ -9,9 +9,10 @@ import com.netflix.curator.retry.RetryNTimes;
 import com.netflix.curator.x.discovery.ServiceCache;
 import com.netflix.curator.x.discovery.ServiceDiscovery;
 import com.netflix.curator.x.discovery.ServiceDiscoveryBuilder;
+import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.details.ServiceCacheListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.xorlev.gatekeeper.data.Cluster;
+import com.xorlev.gatekeeper.data.Server;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -24,20 +25,17 @@ import java.util.concurrent.Executors;
  *
  * @author Michael Rose <michael@fullcontact.com>
  */
-public class ZkWatcher {
-    private static Logger log = LoggerFactory.getLogger(ZkWatcher.class);
+public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private CuratorFramework zk;
 
     private ServiceDiscovery<Void> dsc;
-    private List<ServiceCache<Void>> serviceCache = Lists.newArrayList();
-
-    private ClusterHandler<Void> clusterHandler;
+    private List<ServiceCache<Void>> serviceCacheList = Lists.newArrayList();
 
     private transient boolean run = true;
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public ZkWatcher(ClusterHandler<Void> clusterHandler) {
-        this.clusterHandler = clusterHandler;
+    public ZookeeperClusterProvider(ClusterHandler<Void> clusterHandler) {
+        super(clusterHandler);
     }
 
     public void start() throws Exception {
@@ -50,10 +48,10 @@ public class ZkWatcher {
 
         setupZookeeper();
         setupServiceDiscovery();
-//        clusterHandler = new ClusterHandler<Void>();
-        clusterHandler.getServiceCaches().addAll(serviceCache);
 
-        clusterHandler.processClusters();
+        clusterHandler.getServiceCaches().addAll(serviceCacheList);
+
+        updateInstances();
 
         while (run) {
             Thread.sleep(5000);
@@ -63,13 +61,14 @@ public class ZkWatcher {
     }
 
     private void setupZookeeper() {
-        String quorum = AppConfig.getString("zookeeper.quorum");
+        String quorum = AppConfig.getString(Constants.ConfigKeys.ZK_QUORUM);
+        String namespace = AppConfig.getString(Constants.ConfigKeys.ZK_NAMESPACE);
         log.info("Starting Zookeeper with connectString={}", quorum);
         zk = CuratorFrameworkFactory.builder()
                 .connectString(quorum)
                 .connectionTimeoutMs(2000)
                 .retryPolicy(new RetryNTimes(6, 1000))
-                .namespace("discovery")
+                .namespace(namespace.isEmpty() ? null : namespace)
                 .build();
 
         zk.start();
@@ -90,9 +89,9 @@ public class ZkWatcher {
     }
 
     private void initializeServiceCaches() throws Exception {
-        for (ServiceCache<Void> cache : serviceCache) {
+        for (ServiceCache<Void> cache : serviceCacheList) {
             cache.close();
-            serviceCache.remove(cache);
+            serviceCacheList.remove(cache);
         }
 
         for (final String c : AppConfig.getStringList("clusters")) {
@@ -103,7 +102,7 @@ public class ZkWatcher {
             cache.addListener(new ServiceCacheListener() {
                 public void cacheChanged() {
                     log.info("Service {} modified, rewriting config", c);
-                    clusterHandler.processClusters();
+                    updateInstances();
                 }
 
                 public void stateChanged(CuratorFramework curatorFramework, ConnectionState connectionState) {
@@ -111,19 +110,50 @@ public class ZkWatcher {
             }, executorService);
 
             cache.start();
-            serviceCache.add(cache);
+            serviceCacheList.add(cache);
 
         }
         AppConfig.addCallback("clusters", new Runnable() {
             public void run() {
                 try {
                     initializeServiceCaches();
-                    clusterHandler.processClusters();
+                    updateInstances();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    @Override
+    protected List<Cluster> provideClusters() {
+        List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
+        for (ServiceCache<Void> cache : serviceCacheList) {
+            if (!cache.getInstances().isEmpty()) {
+                Cluster cluster = buildCluster(cache.getInstances().get(0));
+
+                for (ServiceInstance<Void> instance : cache.getInstances()) {
+                    cluster.getServers().add(convertInstance(instance));
+                }
+
+                clusterList.add(cluster);
+            }
+        }
+        return clusterList;
+    }
+
+    private Cluster buildCluster(ServiceInstance<Void> instance) {
+        Cluster cluster =  new Cluster(instance.getName());
+        if (instance.getSslPort() != null) {
+            cluster.setProtocol("https");
+        }
+
+        return cluster;
+    }
+
+    protected Server convertInstance(ServiceInstance<Void> instance) {
+        Integer port = instance.getSslPort() != null ? instance.getSslPort() : instance.getPort();
+        return new Server(instance.getAddress(), port);
     }
 
     private void stop() {
