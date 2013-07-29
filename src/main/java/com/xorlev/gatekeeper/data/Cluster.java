@@ -1,9 +1,9 @@
 package com.xorlev.gatekeeper.data;
 
-import com.google.common.collect.Lists;
+import com.beust.jcommander.internal.Sets;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * 2013-07-27
@@ -15,7 +15,7 @@ public class Cluster {
     String protocol = "http";
     String clusterName;
     Integer port = 80;
-    List<Server> servers = Lists.newArrayList();
+    Set<Server> servers = Sets.newHashSet();
 
     public Cluster(String clusterName) {
         this.clusterName = clusterName;

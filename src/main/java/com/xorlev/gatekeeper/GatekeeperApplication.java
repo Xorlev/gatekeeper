@@ -14,14 +14,14 @@ public class GatekeeperApplication {
 
 
 
-    private final ZkWatcher zkWatcher;
+    private final ZookeeperClusterProvider zookeeperInstanceProvider;
 
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(environment);
 
-        this.zkWatcher = new ZkWatcher(new ClusterHandler<Void>());
+        this.zookeeperInstanceProvider = new ZookeeperClusterProvider(new ClusterHandler<Void>());
 
-        this.zkWatcher.start();
+        this.zookeeperInstanceProvider.start();
     }
 
     public String getEnvironment() {

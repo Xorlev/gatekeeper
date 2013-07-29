@@ -48,9 +48,6 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
 
         setupZookeeper();
         setupServiceDiscovery();
-
-        clusterHandler.getServiceCaches().addAll(serviceCacheList);
-
         updateInstances();
 
         while (run) {

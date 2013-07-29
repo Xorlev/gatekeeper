@@ -15,41 +15,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClusterHandler<T> {
-    private Collection<ServiceCache<T>> serviceCaches = Lists.newArrayList();
     private final ConfigWriter configWriter = new ConfigWriter();
     private static final Logger log = LoggerFactory.getLogger(ClusterHandler.class);
 
     public ClusterHandler() {
     }
 
-    public Collection<ServiceCache<T>> getServiceCaches() {
-        return serviceCaches;
-    }
+    void processClusters(List<Cluster> clusterList) {
 
-    void processClusters() {
-        List<Cluster> clusters = Lists.newArrayListWithExpectedSize(serviceCaches.size());
-        for (ServiceCache<T> serviceCache : serviceCaches) {
-            List<ServiceInstance<T>> instances = serviceCache.getInstances();
-
-            log.debug("Processing {}", instances);
-
-            if (!instances.isEmpty()) {
-                Cluster cluster = new Cluster(instances.get(0).getName());
-
-                if (instances.get(0).getSslPort() != null) {
-                    cluster.setProtocol("https");
-                }
-
-                for (ServiceInstance<T> instance : instances) {
-                    cluster.getServers().add(convertInstance(instance));
-                }
-
-                clusters.add(cluster);
-            }
-
-        }
-
-        writeConfig(clusters);
+        writeConfig(clusterList);
     }
 
     protected Server convertInstance(ServiceInstance<T> instance) {
