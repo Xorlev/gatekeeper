@@ -9,15 +9,16 @@ import java.io.*;
 
 public class ConfigWriter {
     private final Mustache mustache;
-    private final Writer writer;
-
-    public ConfigWriter() {
-        this(new OutputStreamWriter(System.out));
-    }
+    private Writer writer = new OutputStreamWriter(System.out);
 
     public ConfigWriter(Writer writer) {
         MustacheFactory mf = new DefaultMustacheFactory();
-        Reader reader = new InputStreamReader(ConfigWriter.class.getClassLoader().getResourceAsStream("nginx.conf.mustache"));
+        Reader reader = null;
+        try {
+            reader = new FileReader(new File(AppConfig.getString("nginx.template-file")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         this.mustache = mf.compile(reader, "nginx_conf");
         this.writer = writer;
@@ -25,6 +26,8 @@ public class ConfigWriter {
 
     void writeConfig(ConfigContext configContext) throws IOException {
         System.out.println(configContext);
+        String filename = AppConfig.getString("nginx.config-file");
+        writer = new FileWriter(filename);
         mustache.execute(writer, configContext).flush();
     }
 }

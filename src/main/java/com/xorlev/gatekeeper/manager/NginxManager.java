@@ -3,6 +3,7 @@ package com.xorlev.gatekeeper.manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -12,6 +13,10 @@ import java.io.IOException;
  */
 public class NginxManager {
     private static final Logger log = LoggerFactory.getLogger(NginxManager.class);
+
+    public static int reloadNginx(String filename) throws FileNotFoundException {
+        return reloadNginx(new PidReader(filename).getPid());
+    }
 
     public static int reloadNginx(int pid) {
         try {

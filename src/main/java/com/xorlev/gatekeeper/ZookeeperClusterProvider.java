@@ -63,8 +63,8 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     }
 
     private void setupZookeeper() {
-        String quorum = AppConfig.getString(Constants.ConfigKeys.ZK_QUORUM);
-        String namespace = AppConfig.getString(Constants.ConfigKeys.ZK_NAMESPACE);
+        String quorum = AppConfig.getString("zookeeper.quorum");
+        String namespace = AppConfig.getString("zookeeper.namespace");
         log.info("Starting Zookeeper with connectString={}", quorum);
         zk = CuratorFrameworkFactory.builder()
                 .connectString(quorum)
@@ -80,7 +80,7 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
         if (zk != null && zk.getState() == CuratorFrameworkState.STARTED) {
 
             dsc = ServiceDiscoveryBuilder.builder(Void.class)
-                    .basePath(AppConfig.getString("discoveryPath"))
+                    .basePath(AppConfig.getString("zookeeper.discoveryPath"))
                     .client(zk)
                     .build();
 
@@ -93,10 +93,11 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private void initializeServiceCaches() throws Exception {
         for (ServiceCache<Void> cache : serviceCacheList) {
             cache.close();
-            serviceCacheList.remove(cache);
         }
+        serviceCacheList = Lists.newArrayList();
 
         for (final String c : AppConfig.getStringList("clusters")) {
+            System.out.println(c);
             ServiceCache<Void> cache = dsc.serviceCacheBuilder()
                     .name(c)
                     .build();
@@ -113,6 +114,17 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
 
             cache.start();
             serviceCacheList.add(cache);
+
+            AppConfig.addCallback("cluster."+c+".context", new Runnable() {
+                public void run() {
+                    try {
+                        initializeServiceCaches();
+                        updateInstances();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
         }
         AppConfig.addCallback("clusters", new Runnable() {

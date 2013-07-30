@@ -1,26 +1,32 @@
 package com.xorlev.gatekeeper;
 
-import com.google.common.collect.Lists;
-import com.netflix.curator.x.discovery.ServiceCache;
-import com.netflix.curator.x.discovery.ServiceInstance;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.ConfigContext;
 import com.xorlev.gatekeeper.data.Location;
-import com.xorlev.gatekeeper.data.Server;
+import com.xorlev.gatekeeper.manager.NginxManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 public class ClusterHandler {
-    private final ConfigWriter configWriter = new ConfigWriter();
+    private ConfigWriter configWriter;
     private static final Logger log = LoggerFactory.getLogger(ClusterHandler.class);
+
+    public ClusterHandler(ConfigWriter configWriter) {
+        this.configWriter = configWriter;
+    }
 
     void processClusters(List<Cluster> clusterList) {
 
         writeConfig(clusterList);
+        try {
+            NginxManager.reloadNginx(AppConfig.getString("nginx.pid-file"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void writeConfig(List<Cluster> clusters) {
