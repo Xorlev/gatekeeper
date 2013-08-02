@@ -19,10 +19,15 @@ public class NginxManager {
     }
 
     public static int reloadNginx(int pid) {
+        log.info("Sending HUP to NGINX on {}", pid);
         try {
-            return new ProcessBuilder().command(
+            int code = new ProcessBuilder().command(
                     "sudo", "kill", "-HUP", Integer.toString(pid)
             ).start().waitFor();
+
+            log.info("HUP returned with {}", code);
+
+            return code;
         } catch (Exception e) {
             log.error("Error attempting to restart NGINX: " + e.getMessage(), e);
             return 1;
