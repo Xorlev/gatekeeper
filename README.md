@@ -21,7 +21,7 @@ existing `nginx.conf`.
     {{#locations}}
         location {{context}} {
         {{#upstream}}
-            proxy_pass              {{protocol}}://{{clusterName}}:{{port}}
+            proxy_pass              {{protocol}}://{{clusterName}}
         {{/upstream}}
         {{#attributes}}
             {{key}}                 {{value}}
@@ -31,6 +31,10 @@ existing `nginx.conf`.
 	
 With two small blocks of customizable templating, each time a node is registered or deregistered a new `nginx.conf`
 is written and nginx sent a `SIGHUP`.
+
+## Disclaimer
+
+This isn't currently used in production. It's a minorly tested utility.
 
 ## Maven
 
