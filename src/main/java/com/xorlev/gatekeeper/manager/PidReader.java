@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * 2013-07-28
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public class PidReader {
     private final File pidFile;

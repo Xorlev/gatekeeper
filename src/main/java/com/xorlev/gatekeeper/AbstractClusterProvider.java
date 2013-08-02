@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 2013-07-28
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public abstract class AbstractClusterProvider {
     protected static Logger log = LoggerFactory.getLogger(ZookeeperClusterProvider.class);

@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 /**
  * 2013-07-27
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private CuratorFramework zk;

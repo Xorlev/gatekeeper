@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 2013-07-27
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 @Data
 public class Location {

@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * cat /opt/nginx/logs/nginx.pid | sudo xargs -I{} kill -HUP {}
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public class NginxManager {
     private static final Logger log = LoggerFactory.getLogger(NginxManager.class);

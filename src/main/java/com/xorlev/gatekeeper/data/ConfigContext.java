@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 2013-07-27
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 @Data
 public class ConfigContext {
