@@ -54,7 +54,7 @@ I'm not good at C, I believe I'd make a leaky C-module. I am confident in my abi
 Additionally, Netflix's Curator library is also top-notch, better than any stock Zookeeper library around.
 
 ##License
-Copyright 2012 Michael Rose
+Copyright 2013 Michael Rose
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the
  License. You may obtain a copy of the License in the LICENSE file, or at:
