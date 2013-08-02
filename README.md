@@ -1,10 +1,8 @@
-#Gatekeeper: NGINX co-process for SOA architectures
+#Gatekeeper: NGINX co-process for SOA-style infrastructures
 
-Gatekeeper watches your [Zookeeper](http://zookeeper.apache.org/) service discovery paths and dynamically builds NGINX
-upstreams for them. Load balancers (ELBs especially) can be SPOFs and are the first steps to madness. Cut out the 
-middle man and let NGINX manage your upstream load balancing.
-
-This project has similar goals to Hipache, but leveraging the scalability and proven performance of NGINX.
+Gatekeeper turns NGINX into your edge service. Gatekeeper watches your [Zookeeper](http://zookeeper.apache.org/) service
+discovery paths and dynamically builds NGINX upstreams for them. Load balancers (ELBs especially) can be SPOFs and are
+the first steps to madness. Cut out the middle man and let NGINX manage your upstream load balancing. 
 
 Gatekeeper uses [Mustache.js](http://mustache.github.io) templates to build upstreams and locations using your
 existing `nginx.conf`.
