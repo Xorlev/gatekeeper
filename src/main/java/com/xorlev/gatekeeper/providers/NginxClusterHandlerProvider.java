@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 /**
  * 2013-09-18
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public class NginxClusterHandlerProvider {
     public static ClusterHandler clusterHandler() throws IOException {

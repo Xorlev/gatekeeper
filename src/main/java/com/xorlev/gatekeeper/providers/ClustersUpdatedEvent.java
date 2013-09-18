@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 2013-09-18
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public class ClustersUpdatedEvent {
     private List<Cluster> clusters;

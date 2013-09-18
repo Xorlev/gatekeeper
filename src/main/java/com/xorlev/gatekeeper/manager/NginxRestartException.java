@@ -3,7 +3,7 @@ package com.xorlev.gatekeeper.manager;
 /**
  * 2013-09-18
  *
- * @author Michael Rose <michael@fullcontact.com>
+ * @author Michael Rose <elementation@gmail.com>
  */
 public class NginxRestartException extends RuntimeException {
     public NginxRestartException(String message) {
