@@ -14,8 +14,6 @@ import com.netflix.curator.x.discovery.details.ServiceCacheListener;
 import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.Server;
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -33,10 +31,6 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private List<ServiceCache<Void>> serviceCacheList = Lists.newArrayList();
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
-
-    public ZookeeperClusterProvider(ClusterHandler clusterHandler) {
-        super(clusterHandler);
-    }
 
     @Override
     public void startUp() throws Exception {
@@ -122,7 +116,7 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     }
 
     @Override
-    protected List<Cluster> clusters() {
+    public List<Cluster> clusters() {
         List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
         for (ServiceCache<Void> cache : serviceCacheList) {
             System.out.println(cache.getInstances());

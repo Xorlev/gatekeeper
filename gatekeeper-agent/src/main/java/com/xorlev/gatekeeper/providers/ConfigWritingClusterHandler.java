@@ -1,7 +1,6 @@
 package com.xorlev.gatekeeper.providers;
 
 import com.xorlev.gatekeeper.AppConfig;
-import com.xorlev.gatekeeper.ConfigWriter;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.ConfigContext;
 import com.xorlev.gatekeeper.data.Location;

@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper;
+package com.xorlev.gatekeeper.providers;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;

@@ -1,7 +1,6 @@
 package com.xorlev.gatekeeper.providers;
 
 import com.xorlev.gatekeeper.AppConfig;
-import com.xorlev.gatekeeper.ConfigWriter;
 
 import java.io.FileWriter;
 import java.io.IOException;

@@ -16,15 +16,7 @@ import java.util.List;
  */
 public abstract class AbstractClusterProvider extends AbstractIdleService {
     protected static Logger log = LoggerFactory.getLogger(ZookeeperClusterProvider.class);
-    protected List<ClusterHandler> clusterHandlers;
-
-    protected AbstractClusterProvider() {
-        this.clusterHandlers = Lists.newArrayList();
-    }
-
-    public AbstractClusterProvider(ClusterHandler clusterHandler) {
-        this.clusterHandlers = Lists.newArrayList(clusterHandler);
-    }
+    protected List<ClusterHandler> clusterHandlers = Lists.newArrayList();
 
     public void registerHandler(ClusterHandler clusterHandler) {
         clusterHandlers.add(clusterHandler);
@@ -42,7 +34,7 @@ public abstract class AbstractClusterProvider extends AbstractIdleService {
         }
     }
 
-    protected abstract List<Cluster> clusters();
+    public abstract List<Cluster> clusters();
 
     public List<ClusterHandler> handlers() {
         return ImmutableList.copyOf(clusterHandlers);
