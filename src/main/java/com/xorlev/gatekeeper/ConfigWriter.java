@@ -18,7 +18,15 @@ public class ConfigWriter {
         try {
             reader = new FileReader(new File(AppConfig.getString("nginx.template-file")));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            try {
+                InputStream is = this.getClass().getResourceAsStream("nginx.conf.mustache");
+
+                if (is == null) throw e;
+
+                reader = new InputStreamReader(is);
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
         }
 
         this.mustache = mf.compile(reader, "nginx_conf");
