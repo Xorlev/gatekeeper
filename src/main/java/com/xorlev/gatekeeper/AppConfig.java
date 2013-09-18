@@ -4,11 +4,9 @@ import com.netflix.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 
-public class AppConfig implements Serializable {
+public class AppConfig {
     protected static final Logger log = LoggerFactory.getLogger(AppConfig.class);
     protected static boolean initialized = false;
 
@@ -29,36 +27,31 @@ public class AppConfig implements Serializable {
     }
 
     public static Integer getInt(String property) {
-        final DynamicIntProperty intProperty =
-                DynamicPropertyFactory.getInstance().getIntProperty(property, 0);
+        final DynamicIntProperty intProperty = DynamicPropertyFactory.getInstance().getIntProperty(property, 0);
 
         return intProperty.get();
     }
 
     public static Long getLong(String property) {
-        final DynamicLongProperty longProperty =
-                DynamicPropertyFactory.getInstance().getLongProperty(property, 0);
+        final DynamicLongProperty longProperty = DynamicPropertyFactory.getInstance().getLongProperty(property, 0);
 
         return longProperty.get();
     }
 
     public static Boolean getBoolean(String property) {
-        final DynamicBooleanProperty booleanProperty =
-                DynamicPropertyFactory.getInstance().getBooleanProperty(property, false);
+        final DynamicBooleanProperty booleanProperty = DynamicPropertyFactory.getInstance().getBooleanProperty(property, false);
 
         return booleanProperty.get();
     }
 
     public static Double getDouble(String property) {
-        final DynamicDoubleProperty doubleProperty =
-                DynamicPropertyFactory.getInstance().getDoubleProperty(property, 0.0);
+        final DynamicDoubleProperty doubleProperty = DynamicPropertyFactory.getInstance().getDoubleProperty(property, 0.0);
 
         return doubleProperty.get();
     }
 
     public static String getString(String property) {
-        final DynamicStringProperty stringProperty =
-                DynamicPropertyFactory.getInstance().getStringProperty(property, "");
+        final DynamicStringProperty stringProperty = DynamicPropertyFactory.getInstance().getStringProperty(property, "");
 
         return stringProperty.get();
     }
