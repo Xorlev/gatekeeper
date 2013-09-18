@@ -2,10 +2,14 @@ package com.xorlev.gatekeeper;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.common.util.concurrent.ServiceManager;
+import com.xorlev.gatekeeper.providers.AbstractClusterProvider;
+import com.xorlev.gatekeeper.providers.ClusterProviderFactory;
+import com.xorlev.gatekeeper.providers.NginxClusterHandlerProvider;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.Collections;
 
 /**
  * 2013-07-28
@@ -16,32 +20,32 @@ public class GatekeeperApplication {
     @Parameter(names = {"--environment", "-e"}, description = "Environment config to load")
     private String environment = "production";
 
+    private ServiceManager manager;
+
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(environment);
 
+        AbstractClusterProvider clusterProvider = ClusterProviderFactory.providerFor(AppConfig.getString("cluster_provider.impl"));
+        clusterProvider.registerHandler(NginxClusterHandlerProvider.clusterHandler());
 
-        ConfigWriter configWriter = getConfigWriter();
+        manager = new ServiceManager(Collections.singleton(clusterProvider));
 
-        AbstractClusterProvider clusterProvider =
-                (AbstractClusterProvider) Class.forName(AppConfig.getString("cluster_provider.impl"))
-                        .getConstructors()[0].newInstance(new ClusterHandler(configWriter));
-        clusterProvider.start();
+        registerSignalHandler();
 
-        // spin
-
-        clusterProvider.stop();
+        manager.startAsync();
+        manager.awaitStopped();
     }
 
-    private ConfigWriter getConfigWriter() throws IOException {
-        String filename = AppConfig.getString("nginx.config-file");
-
-        ConfigWriter configWriter = null;
-        if (filename.isEmpty()) {
-            configWriter = new ConfigWriter(new OutputStreamWriter(System.out));
-        } else {
-            configWriter = new ConfigWriter(new FileWriter(filename));
-        }
-        return configWriter;
+    private void registerSignalHandler() {
+        Signal.handle(new Signal("TERM"), new SignalHandler() {
+            public void handle(Signal signal) {
+                try {
+                    manager.stopAsync();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {

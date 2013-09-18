@@ -3,6 +3,7 @@ package com.xorlev.gatekeeper;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.ConfigContext;
 
 import java.io.*;
@@ -24,7 +25,7 @@ public class ConfigWriter {
         this.writer = writer;
     }
 
-    void writeConfig(ConfigContext configContext) throws IOException {
+    public void writeConfig(ConfigContext configContext) throws IOException {
         System.out.println(configContext);
         String filename = AppConfig.getString("nginx.config-file");
         writer = new FileWriter(filename);

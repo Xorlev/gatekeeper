@@ -1,5 +1,7 @@
-package com.xorlev.gatekeeper;
+package com.xorlev.gatekeeper.providers;
 
+import com.xorlev.gatekeeper.AppConfig;
+import com.xorlev.gatekeeper.ConfigWriter;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.ConfigContext;
 import com.xorlev.gatekeeper.data.Location;
@@ -11,17 +13,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-public class ClusterHandler {
+public class ConfigWritingClusterHandler implements ClusterHandler {
     private ConfigWriter configWriter;
-    private static final Logger log = LoggerFactory.getLogger(ClusterHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigWritingClusterHandler.class);
 
-    public ClusterHandler(ConfigWriter configWriter) {
+    public ConfigWritingClusterHandler(ConfigWriter configWriter) {
         this.configWriter = configWriter;
     }
 
-    void processClusters(List<Cluster> clusterList) {
+    public void processClusters(ClustersUpdatedEvent event) {
+        writeConfig(event.getClusters());
 
-        writeConfig(clusterList);
         try {
             NginxManager.reloadNginx(AppConfig.getString("nginx.pid-file"));
         } catch (FileNotFoundException e) {
@@ -32,8 +34,8 @@ public class ClusterHandler {
     private void writeConfig(List<Cluster> clusters) {
         ConfigContext configContext = new ConfigContext(clusters);
 
-        for (Cluster cluster: clusters) {
-            for (String context : AppConfig.getStringList("cluster."+cluster.getClusterName()+".context")) {
+        for (Cluster cluster : clusters) {
+            for (String context : AppConfig.getStringList("cluster." + cluster.getClusterName() + ".context")) {
                 configContext.getLocations().add(new Location(context, cluster));
             }
         }

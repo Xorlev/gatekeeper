@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper;
+package com.xorlev.gatekeeper.providers;
 
 import com.google.common.collect.Lists;
 import com.netflix.curator.framework.CuratorFramework;
@@ -11,6 +11,7 @@ import com.netflix.curator.x.discovery.ServiceDiscovery;
 import com.netflix.curator.x.discovery.ServiceDiscoveryBuilder;
 import com.netflix.curator.x.discovery.ServiceInstance;
 import com.netflix.curator.x.discovery.details.ServiceCacheListener;
+import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.Server;
 import sun.misc.Signal;
@@ -31,7 +32,6 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private ServiceDiscovery<Void> dsc;
     private List<ServiceCache<Void>> serviceCacheList = Lists.newArrayList();
 
-    private transient boolean run = true;
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     public ZookeeperClusterProvider(ClusterHandler clusterHandler) {
@@ -39,39 +39,26 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     }
 
     @Override
-    public void start() throws Exception {
-        Signal.handle(new Signal("TERM"), new SignalHandler() {
-            public void handle(Signal signal) {
-                try {
-                    stop();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
+    public void startUp() throws Exception {
         setupZookeeper();
         setupServiceDiscovery();
         updateInstances();
+    }
 
-        while (run) {
-            Thread.sleep(5000);
-        }
+    @Override
+    public void shutDown() throws Exception {
+        log.info("Shutting down...");
 
-        stop();
+        executorService.shutdown();
+        if (dsc != null) dsc.close();
+        if (zk != null) zk.close();
     }
 
     private void setupZookeeper() {
         String quorum = AppConfig.getString("zookeeper.quorum");
         String namespace = AppConfig.getString("zookeeper.namespace");
         log.info("Starting Zookeeper with connectString={}", quorum);
-        zk = CuratorFrameworkFactory.builder()
-                .connectString(quorum)
-                .connectionTimeoutMs(2000)
-                .retryPolicy(new RetryNTimes(6, 1000))
-                .namespace(namespace.isEmpty() ? null : namespace)
-                .build();
+        zk = CuratorFrameworkFactory.builder().connectString(quorum).connectionTimeoutMs(2000).retryPolicy(new RetryNTimes(6, 1000)).namespace(namespace.isEmpty() ? null : namespace).build();
 
         zk.start();
     }
@@ -79,10 +66,7 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private void setupServiceDiscovery() throws Exception {
         if (zk != null && zk.getState() == CuratorFrameworkState.STARTED) {
 
-            dsc = ServiceDiscoveryBuilder.builder(Void.class)
-                    .basePath(AppConfig.getString("zookeeper.discoveryPath"))
-                    .client(zk)
-                    .build();
+            dsc = ServiceDiscoveryBuilder.builder(Void.class).basePath(AppConfig.getString("zookeeper.discoveryPath")).client(zk).build();
 
             dsc.start();
 
@@ -98,9 +82,7 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
 
         for (final String c : AppConfig.getStringList("clusters")) {
             System.out.println(c);
-            ServiceCache<Void> cache = dsc.serviceCacheBuilder()
-                    .name(c)
-                    .build();
+            ServiceCache<Void> cache = dsc.serviceCacheBuilder().name(c).build();
 
             cache.addListener(new ServiceCacheListener() {
                 public void cacheChanged() {
@@ -115,7 +97,7 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
             cache.start();
             serviceCacheList.add(cache);
 
-            AppConfig.addCallback("cluster."+c+".context", new Runnable() {
+            AppConfig.addCallback("cluster." + c + ".context", new Runnable() {
                 public void run() {
                     try {
                         initializeServiceCaches();
@@ -140,12 +122,12 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     }
 
     @Override
-    protected List<Cluster> provideClusters() {
+    protected List<Cluster> clusters() {
         List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
         for (ServiceCache<Void> cache : serviceCacheList) {
             System.out.println(cache.getInstances());
             if (!cache.getInstances().isEmpty()) {
-                Cluster cluster = buildCluster(cache.getInstances().get(0));
+                Cluster cluster = clusterFromInstance(cache.getInstances().get(0));
 
                 for (ServiceInstance<Void> instance : cache.getInstances()) {
                     cluster.getServers().add(convertInstance(instance));
@@ -157,8 +139,8 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
         return clusterList;
     }
 
-    private Cluster buildCluster(ServiceInstance<Void> instance) {
-        Cluster cluster =  new Cluster(instance.getName());
+    private Cluster clusterFromInstance(ServiceInstance<Void> instance) {
+        Cluster cluster = new Cluster(instance.getName());
         if (instance.getSslPort() != null) {
             cluster.setProtocol("https");
         }
@@ -170,18 +152,5 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
         Integer port = instance.getSslPort() != null ? instance.getSslPort() : instance.getPort();
         return new Server(instance.getAddress(), port);
     }
-
-    @Override
-    public void stop() throws Exception {
-        try {
-            log.info("Shutting down...");
-            run = false;
-            executorService.shutdown();
-            if (dsc != null) dsc.close();
-            if (zk != null) zk.close();
-        } catch (Exception e) {
-            log.warn("Exception while shutting down", e);
-        }
-     }
 
 }
