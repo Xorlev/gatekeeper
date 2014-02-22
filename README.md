@@ -43,6 +43,9 @@ is written and NGINX sent a `SIGHUP`.
 You'll need a NGINX config template and a `gatekeeper.properties`. There are defaults included in `nginx.conf.mustache.default`
 and `gatekeeper.properties.default`.
 
+Any additional configuration (e.g. FQDN, SSL, listeners, etc.) can be done in nginx.conf as you'd normally
+do. You can even include a default upstream and default context directly in the template.
+
 ### Clusters & Routing
 In your `gatekeeper.properties` you'll need to define clusters, which will become your NGINX upstreams. These clusters
 correspond to cluster names you've defined using your service discovery extension.
