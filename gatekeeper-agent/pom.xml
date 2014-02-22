@@ -25,12 +25,12 @@
         <dependency>
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
-            <version>0.8.13</version>
+            <version>${mustache.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
-            <version>1.30</version>
+            <version>${jcommander.version}</version>
         </dependency>
     </dependencies>
 

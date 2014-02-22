@@ -14,8 +14,21 @@
         <module>gatekeeper-zookeeper</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:git://github.com/xorlev/Gatekeeper.git</connection>
+        <url>https://github.com/xorlev/Gatekeeper</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <discovery.package>gatekeeper-zookeeper</discovery.package>
+        <guava.version>16.0</guava.version>
+        <logback.version>1.0.13</logback.version>
+        <lombok.version>12.0</lombok.version>
+        <archaius.version>0.5.11</archaius.version>
+        <curator.version>1.3.3</curator.version>
+        <mustache.version>0.8.13</mustache.version>
+        <jcommander.version>0.8.13</jcommander.version>
     </properties>
 
     <dependencies>
