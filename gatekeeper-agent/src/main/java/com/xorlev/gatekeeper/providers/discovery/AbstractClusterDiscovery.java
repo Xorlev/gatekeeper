@@ -1,9 +1,12 @@
-package com.xorlev.gatekeeper.providers;
+package com.xorlev.gatekeeper.providers.discovery;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.xorlev.gatekeeper.data.Cluster;
+import com.xorlev.gatekeeper.providers.output.ClusterHandler;
+import com.xorlev.gatekeeper.providers.ClustersUpdatedEvent;
+import com.xorlev.gatekeeper.providers.discovery.ZookeeperClusterDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +17,8 @@ import java.util.List;
  *
  * @author Michael Rose <elementation@gmail.com>
  */
-public abstract class AbstractClusterProvider extends AbstractIdleService {
-    protected static Logger log = LoggerFactory.getLogger(ZookeeperClusterProvider.class);
+public abstract class AbstractClusterDiscovery extends AbstractIdleService {
+    protected static Logger log = LoggerFactory.getLogger(ZookeeperClusterDiscovery.class);
     protected List<ClusterHandler> clusterHandlers = Lists.newArrayList();
 
     public void registerHandler(ClusterHandler clusterHandler) {

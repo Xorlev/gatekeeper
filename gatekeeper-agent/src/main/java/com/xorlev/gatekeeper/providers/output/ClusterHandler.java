@@ -1,4 +1,6 @@
-package com.xorlev.gatekeeper.providers;
+package com.xorlev.gatekeeper.providers.output;
+
+import com.xorlev.gatekeeper.providers.ClustersUpdatedEvent;
 
 /**
  * 2013-09-18

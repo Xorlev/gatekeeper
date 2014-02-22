@@ -4,6 +4,7 @@ import com.netflix.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 public class AppConfig {
@@ -15,13 +16,15 @@ public class AppConfig {
      *
      * @param environment
      */
-    public static void initializeConfiguration(String environment) {
+    public static void initializeConfiguration(String environment) throws IOException {
         log.info("Initializing cascaded config with environment=[{}]", environment);
 
         if (!initialized) {
             synchronized (AppConfig.class) {
                 initialized = true;
-                DynamicPropertyFactory.getInstance();
+//                DynamicPropertyFactory.getInstance();
+
+                ConfigurationManager.loadCascadedPropertiesFromResources("gatekeeper");
             }
         }
     }

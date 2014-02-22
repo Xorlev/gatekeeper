@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.providers;
+package com.xorlev.gatekeeper.providers.output;
 
 import com.xorlev.gatekeeper.AppConfig;
 
@@ -11,9 +11,9 @@ import java.io.OutputStreamWriter;
  *
  * @author Michael Rose <elementation@gmail.com>
  */
-public class NginxClusterHandlerProvider {
+public class NginxFactory {
     public static ClusterHandler clusterHandler() throws IOException {
-        return new ConfigWritingClusterHandler(configWriter());
+        return new NginxConfigWritingClusterHandler(configWriter());
     }
 
     private static ConfigWriter configWriter() throws IOException {

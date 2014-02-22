@@ -7,15 +7,15 @@ the first steps to madness. Cut out the middle man and let NGINX manage your ups
 Gatekeeper uses [Mustache.js](http://mustache.github.io) templates to build upstreams and locations using your
 existing `nginx.conf`.
 
-	{{#clusters}}
-	    upstream {{clusterName}} {
-	    {{#servers}}
-	        server {{host}}:{{port}};
-	    {{/servers}}
-	        keepalive 24;
-	    }
-	{{/clusters}}
-	...
+    {{#clusters}}
+        upstream {{clusterName}} {
+        {{#servers}}
+            server {{host}}:{{port}};
+        {{/servers}}
+            keepalive 24;
+        }
+    {{/clusters}}
+    ...
     {{#locations}}
         location {{context}} {
         {{#upstream}}
@@ -26,9 +26,20 @@ existing `nginx.conf`.
         {{/attributes}}
         }
     {{/locations}}
-	
+    
 With two small blocks of customizable templating, each time a node is registered or deregistered a new `nginx.conf`
 is written and nginx sent a `SIGHUP`.
+
+## Running
+
+Build the agent as you would normally
+    mvn package
+
+A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Take this a
+
+You can run the agent as below:
+
+    java -jar gatekeeper.jar
 
 ## Disclaimer
 
@@ -38,11 +49,11 @@ This isn't currently used in production. It's a minorly tested utility.
 
 Core:
 
-	<dependency>
-		<groupId>com.xorlev.gatekeeper</groupId>
-		<artifactId>gatekeeper-core</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
-	</dependency>
+    <dependency>
+        <groupId>com.xorlev.gatekeeper</groupId>
+        <artifactId>gatekeeper-core</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </dependency>
 
 ## Service Discovery Implementations
 

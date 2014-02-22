@@ -38,8 +38,4 @@ public class NginxManager {
             return 1;
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        NginxManager.reloadNginx(31935);
-    }
 }

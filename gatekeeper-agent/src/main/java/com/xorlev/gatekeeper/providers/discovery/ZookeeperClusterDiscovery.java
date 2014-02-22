@@ -1,5 +1,6 @@
-package com.xorlev.gatekeeper.providers;
+package com.xorlev.gatekeeper.providers.discovery;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
@@ -14,6 +15,7 @@ import com.netflix.curator.x.discovery.details.ServiceCacheListener;
 import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.Server;
+import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +26,7 @@ import java.util.concurrent.Executors;
  *
  * @author Michael Rose <elementation@gmail.com>
  */
-public class ZookeeperClusterProvider extends AbstractClusterProvider {
+public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
     private CuratorFramework zk;
 
     private ServiceDiscovery<Void> dsc;
@@ -52,7 +54,12 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
         String quorum = AppConfig.getString("zookeeper.quorum");
         String namespace = AppConfig.getString("zookeeper.namespace");
         log.info("Starting Zookeeper with connectString={}", quorum);
-        zk = CuratorFrameworkFactory.builder().connectString(quorum).connectionTimeoutMs(2000).retryPolicy(new RetryNTimes(6, 1000)).namespace(namespace.isEmpty() ? null : namespace).build();
+        zk = CuratorFrameworkFactory.builder()
+                .connectString(quorum)
+                .connectionTimeoutMs(2000)
+                .retryPolicy(new RetryNTimes(6, 1000))
+                .namespace(namespace.isEmpty() ? null : namespace)
+                .build();
 
         zk.start();
     }
@@ -60,7 +67,10 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     private void setupServiceDiscovery() throws Exception {
         if (zk != null && zk.getState() == CuratorFrameworkState.STARTED) {
 
-            dsc = ServiceDiscoveryBuilder.builder(Void.class).basePath(AppConfig.getString("zookeeper.discoveryPath")).client(zk).build();
+            dsc = ServiceDiscoveryBuilder.builder(Void.class)
+                    .basePath(AppConfig.getString("zookeeper.discoveryPath"))
+                    .client(zk)
+                    .build();
 
             dsc.start();
 
@@ -75,7 +85,6 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
         serviceCacheList = Lists.newArrayList();
 
         for (final String c : AppConfig.getStringList("clusters")) {
-            System.out.println(c);
             ServiceCache<Void> cache = dsc.serviceCacheBuilder().name(c).build();
 
             cache.addListener(new ServiceCacheListener() {
@@ -119,7 +128,6 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
     public List<Cluster> clusters() {
         List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
         for (ServiceCache<Void> cache : serviceCacheList) {
-            System.out.println(cache.getInstances());
             if (!cache.getInstances().isEmpty()) {
                 Cluster cluster = clusterFromInstance(cache.getInstances().get(0));
 
@@ -127,6 +135,8 @@ public class ZookeeperClusterProvider extends AbstractClusterProvider {
                     cluster.getServers().add(convertInstance(instance));
                 }
 
+                log.info("Discovery: cluster=[{}] has {} instances, {}...",
+                        cluster.getClusterName(), cluster.getServers().size(), Iterables.limit(cluster.getServers(), 5));
                 clusterList.add(cluster);
             }
         }

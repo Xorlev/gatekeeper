@@ -3,9 +3,9 @@ package com.xorlev.gatekeeper;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.util.concurrent.ServiceManager;
-import com.xorlev.gatekeeper.providers.AbstractClusterProvider;
-import com.xorlev.gatekeeper.providers.ClusterProviderFactory;
-import com.xorlev.gatekeeper.providers.NginxClusterHandlerProvider;
+import com.xorlev.gatekeeper.providers.discovery.ClusterDiscoveryFactory;
+import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
+import com.xorlev.gatekeeper.providers.output.NginxFactory;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -25,8 +25,9 @@ public class GatekeeperApplication {
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(environment);
 
-        AbstractClusterProvider clusterProvider = ClusterProviderFactory.providerFor(AppConfig.getString("cluster_provider.impl"));
-        clusterProvider.registerHandler(NginxClusterHandlerProvider.clusterHandler());
+        AbstractClusterDiscovery clusterProvider = ClusterDiscoveryFactory
+                .providerFor(AppConfig.getString("cluster_provider.impl"));
+        clusterProvider.registerHandler(NginxFactory.clusterHandler());
 
         manager = new ServiceManager(Collections.singleton(clusterProvider));
 
