@@ -37,7 +37,25 @@ existing `nginx.conf`.
     }
     
 With two small blocks of customizable templating, each time a node is registered or deregistered a new `nginx.conf`
-is written and nginx sent a `SIGHUP`.
+is written and NGINX sent a `SIGHUP`.
+
+## Configuration
+You'll need a NGINX config template and a `gatekeeper.properties`. There are defaults included in `nginx.conf.mustache.default`
+and `gatekeeper.properties.default`.
+
+### Clusters & Routing
+In your `gatekeeper.properties` you'll need to define clusters, which will become your NGINX upstreams. These clusters
+correspond to cluster names you've defined using your service discovery extension.
+
+    # Upstreams to look for
+    clusters=service-a,service-b
+
+Each cluster can then be assigned various contexts for routing. Future work will push this config into ZooKeeper.
+
+    # Proxy_pass locations, comma-separated lists
+    cluster.service-a.context=/a
+    cluster.service-b.context=/,/b
+
 
 ## Running
 
