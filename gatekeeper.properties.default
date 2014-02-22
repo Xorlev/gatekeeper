@@ -1,0 +1,29 @@
+# Cluster provider impl to use
+cluster_provider.impl=com.xorlev.gatekeeper.providers.discovery.ZookeeperClusterDiscovery
+
+################################################
+# Only applicable for ZookeeperClusterProvider #
+################################################
+zookeeper.quorum=zookeeper1.mycompany.com
+zookeeper.namespace=discovery
+zookeeper.discoveryPath=/services
+
+#### Routing & cluster config ####
+
+# Upstreams to look for
+clusters=service-a,service-b
+
+# Proxy_pass locations, comma-separated lists
+cluster.service-a.context=/a
+cluster.service-b.context=/,/b
+
+#### Nginx config ####
+
+# Path to the NGINX config. Must be writable by the Gatekeeper user
+nginx.config-file=/etc/nginx/nginx.conf
+
+# NGINX Template file path
+nginx.template-file=nginx.conf.mustache
+
+# Path to the NGINX pid file.
+nginx.pid-file=/var/run/nginx.pid

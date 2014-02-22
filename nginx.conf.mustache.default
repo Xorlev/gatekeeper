@@ -1,0 +1,33 @@
+events {
+    worker_connections  4096;
+}
+
+http {
+    {{#clusters}}
+        upstream {{clusterName}} {
+        {{#servers}}
+            server {{host}}:{{port}};
+        {{/servers}}
+        }
+    {{/clusters}}
+
+    server {
+        listen 80;
+        server_name myserver.com;
+
+        {{#locations}}
+            location {{context}} {
+            {{#upstream}}
+                proxy_pass              {{protocol}}://{{clusterName}};
+            {{/upstream}}
+            {{#attributes}}
+                {{key}}                 {{value}}
+            {{/attributes}}
+            }
+        {{/locations}}
+
+        # Can mix and match hard-coded locations too
+        location /check {
+            return 200 "OK";
+        }
+}
