@@ -1,6 +1,5 @@
 package com.xorlev.gatekeeper;
 
-import com.google.common.io.Files;
 import com.netflix.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

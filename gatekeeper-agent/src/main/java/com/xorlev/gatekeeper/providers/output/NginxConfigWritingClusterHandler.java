@@ -5,7 +5,7 @@ import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.ConfigContext;
 import com.xorlev.gatekeeper.data.Location;
 import com.xorlev.gatekeeper.manager.NginxManager;
-import com.xorlev.gatekeeper.providers.ClustersUpdatedEvent;
+import com.xorlev.gatekeeper.providers.discovery.ClustersUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,6 @@
 package com.xorlev.gatekeeper.data;
 
-import com.beust.jcommander.internal.Sets;
+import com.google.common.collect.Sets;
 import lombok.Data;
 
 import java.util.Set;
