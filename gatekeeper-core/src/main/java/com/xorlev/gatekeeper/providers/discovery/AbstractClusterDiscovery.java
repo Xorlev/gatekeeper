@@ -8,6 +8,7 @@ import com.xorlev.gatekeeper.providers.output.ClusterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ import java.util.List;
 public abstract class AbstractClusterDiscovery extends AbstractIdleService {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected List<ClusterHandler> clusterHandlers = Lists.newArrayList();
+    protected List<Cluster> previousClusterList = Collections.emptyList();
 
     public void registerHandler(ClusterHandler clusterHandler) {
         clusterHandlers.add(clusterHandler);
@@ -30,8 +32,10 @@ public abstract class AbstractClusterDiscovery extends AbstractIdleService {
     protected void updateInstances() {
         List<Cluster> clusterList = clusters();
 
-        for (ClusterHandler clusterHandler : clusterHandlers) {
-            clusterHandler.processClusters(new ClustersUpdatedEvent(clusterList));
+        if (previousClusterList != clusterList) {
+            for (ClusterHandler clusterHandler : clusterHandlers) {
+                clusterHandler.processClusters(new ClustersUpdatedEvent(clusterList));
+            }
         }
     }
 
