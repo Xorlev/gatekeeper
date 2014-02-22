@@ -18,6 +18,11 @@
             <version>${parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.xorlev.gatekeeper</groupId>
+            <artifactId>${discovery.package}</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
             <version>0.8.13</version>
