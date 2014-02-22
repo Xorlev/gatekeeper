@@ -21,12 +21,12 @@ public class GatekeeperApplication {
     private String configurationFile = "gatekeeper.properties";
 
     private ServiceManager manager;
+    private AbstractClusterDiscovery clusterProvider;
 
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(configurationFile);
 
-        AbstractClusterDiscovery clusterProvider = ClusterDiscoveryFactory
-                .providerFor(AppConfig.getString("cluster_provider.impl"));
+        clusterProvider = ClusterDiscoveryFactory.providerFor(AppConfig.getString("cluster_provider.impl"));
         clusterProvider.registerHandler(NginxFactory.clusterHandler());
 
         manager = new ServiceManager(Collections.singleton(clusterProvider));
@@ -42,6 +42,15 @@ public class GatekeeperApplication {
             public void handle(Signal signal) {
                 try {
                     manager.stopAsync();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Signal.handle(new Signal("HUP"), new SignalHandler() {
+            public void handle(Signal signal) {
+                try {
+                    clusterProvider.updateInstances();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -29,7 +29,7 @@ public abstract class AbstractClusterDiscovery extends AbstractIdleService {
 
     public abstract void shutDown() throws Exception;
 
-    protected void updateInstances() {
+    public void updateInstances() {
         List<Cluster> clusterList = clusters();
 
         if (previousClusterList != clusterList) {

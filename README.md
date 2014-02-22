@@ -75,7 +75,9 @@ You can run the agent as below:
     or for the default `gatekeeper.properties`
 
     java -jar gatekeeper.jar
-    
+
+### SupervisorD
+
 I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A config for Gatekeeper looks like this:
 
     [program:library-api]
@@ -83,6 +85,14 @@ I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A confi
     command=java -Xmx128m -Xss256k -jar gatekeeper-agent.jar -c gatekeeper.properties
     redirect_stderr=true
     stdout_logfile=/var/log/gatekeeper.log
+
+### Forcing a rewrite
+
+Send a SIGHUP to the Gatekeeper process.
+
+kill -HUP <pid of gatekeeper process>
+
+You should see a message in the log.
 
 ## Maven
 You'll generally want to compile this yourself, but it's available on Clojars if you want:
