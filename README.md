@@ -39,7 +39,7 @@ A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Tak
 
 You can run the agent as below:
 
-    java -jar gatekeeper.jar
+    java -jar gatekeeper.jar -c /path/to/gatekeeper.properties
 
 ## Disclaimer
 
