@@ -19,7 +19,7 @@ existing `nginx.conf`.
     {{#locations}}
         location {{context}} {
         {{#upstream}}
-            proxy_pass              {{protocol}}://{{clusterName}}
+            proxy_pass              {{protocol}}://{{clusterName}};
         {{/upstream}}
         {{#attributes}}
             {{key}}                 {{value}}
@@ -46,19 +46,20 @@ You can run the agent as below:
 This isn't currently used in production. It's a minorly tested utility.
 
 ## Maven
+You'll generally want to compile this yourself, but it's available on Clojars if you want:
 
 Core:
 
     <dependency>
         <groupId>com.xorlev.gatekeeper</groupId>
         <artifactId>gatekeeper-core</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </dependency>
 
 ## Service Discovery Implementations
 
 Currently only supports Netflix Curator Service Discovery Extensions. Other implementations are trivial and can be
- implemented by including gatekeeper-core.
+ implemented by including gatekeeper-core, and including your dependency in the resulting gatekeeper-agent build.
 
 ## FAQ
 
