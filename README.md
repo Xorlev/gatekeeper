@@ -90,7 +90,7 @@ I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A confi
 
 Send a SIGHUP to the Gatekeeper process.
 
-kill -HUP <pid of gatekeeper process>
+    kill -HUP <pid of gatekeeper process>
 
 You should see a message in the log.
 
