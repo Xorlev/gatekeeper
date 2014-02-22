@@ -17,13 +17,13 @@ import java.util.Collections;
  * @author Michael Rose <elementation@gmail.com>
  */
 public class GatekeeperApplication {
-    @Parameter(names = {"--environment", "-e"}, description = "Environment config to load")
-    private String environment = "production";
+    @Parameter(names = {"--config", "-c"}, description = "Config file to load")
+    private String configurationFile = "gatekeeper.properties";
 
     private ServiceManager manager;
 
     public GatekeeperApplication() throws Exception {
-        AppConfig.initializeConfiguration(environment);
+        AppConfig.initializeConfiguration(configurationFile);
 
         AbstractClusterDiscovery clusterProvider = ClusterDiscoveryFactory
                 .providerFor(AppConfig.getString("cluster_provider.impl"));

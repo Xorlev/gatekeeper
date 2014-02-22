@@ -79,11 +79,13 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
     }
 
     private void initializeServiceCaches() throws Exception {
+        // Close any caches (if exists)
         for (ServiceCache<Void> cache : serviceCacheList) {
             cache.close();
         }
         serviceCacheList = Lists.newArrayList();
 
+        // Grab each cluster, build a service cache, and add listeners to update config file
         for (final String c : AppConfig.getStringList("clusters")) {
             ServiceCache<Void> cache = dsc.serviceCacheBuilder().name(c).build();
 
@@ -100,10 +102,10 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
             cache.start();
             serviceCacheList.add(cache);
 
+            // If context changes, rebuild config
             AppConfig.addCallback("cluster." + c + ".context", new Runnable() {
                 public void run() {
                     try {
-                        initializeServiceCaches();
                         updateInstances();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -112,6 +114,8 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
             });
 
         }
+
+        // If clusters change, re-init our service caches and config.
         AppConfig.addCallback("clusters", new Runnable() {
             public void run() {
                 try {

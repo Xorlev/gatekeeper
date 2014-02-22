@@ -1,9 +1,11 @@
 package com.xorlev.gatekeeper;
 
+import com.google.common.io.Files;
 import com.netflix.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -14,17 +16,24 @@ public class AppConfig {
     /**
      * Initializes Archaius using the proper gatekeeper-{environment}.properties file
      *
-     * @param environment
+     * @param configFile
      */
-    public static void initializeConfiguration(String environment) throws IOException {
-        log.info("Initializing cascaded config with environment=[{}]", environment);
+    public static void initializeConfiguration(String configFile) throws IOException {
+        log.info("Initializing config with file=[{}]", configFile);
 
         if (!initialized) {
             synchronized (AppConfig.class) {
                 initialized = true;
 //                DynamicPropertyFactory.getInstance();
+                File config = new File(configFile);
 
-                ConfigurationManager.loadCascadedPropertiesFromResources("gatekeeper");
+                if (!config.exists()) {
+                    throw new IllegalArgumentException("Could not find configuration file! " + config.getAbsolutePath());
+                }
+
+                ConfigurationManager.loadPropertiesFromConfiguration(new DynamicURLConfiguration(
+                        0, 10000, false, config.toURI().toString()
+                ));
             }
         }
     }
