@@ -42,6 +42,7 @@ is written and nginx sent a `SIGHUP`.
 ## Running
 
 Build the agent as you would normally
+
     mvn package
 
 A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Take this jar and put it on your NGINX servers.
