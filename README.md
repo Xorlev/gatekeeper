@@ -50,6 +50,10 @@ A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Tak
 You can run the agent as below:
 
     java -jar gatekeeper.jar -c /path/to/gatekeeper.properties
+
+    or for the default `gatekeeper.properties`
+
+    java -jar gatekeeper.jar
     
 I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A config for Gatekeeper looks like this:
 
@@ -58,10 +62,6 @@ I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A confi
     command=java -Xmx128m -Xss256k -jar gatekeeper-agent.jar -c gatekeeper.properties
     redirect_stderr=true
     stdout_logfile=/var/log/gatekeeper.log
-
-## Disclaimer
-
-This isn't currently used in production. It's a minorly tested utility.
 
 ## Maven
 You'll generally want to compile this yourself, but it's available on Clojars if you want:
@@ -77,7 +77,7 @@ Core:
 ## Service Discovery Implementations
 
 Currently only supports Netflix Curator Service Discovery Extensions. Other implementations are trivial and can be
- implemented by including gatekeeper-core, and including your dependency in the resulting gatekeeper-agent build.
+ implemented by including `gatekeeper-core`, and including your dependency in the resulting gatekeeper-agent build.
 
 ## FAQ
 
