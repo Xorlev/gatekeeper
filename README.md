@@ -7,25 +7,34 @@ the first steps to madness. Cut out the middle man and let NGINX manage your ups
 Gatekeeper uses [Mustache.js](http://mustache.github.io) templates to build upstreams and locations using your
 existing `nginx.conf`.
 
-    {{#clusters}}
-        upstream {{clusterName}} {
-        {{#servers}}
-            server {{host}}:{{port}};
-        {{/servers}}
-            keepalive 24;
+    events {
+        worker_connections  4096;
+    }
+
+    http {
+        {{#clusters}}
+            upstream {{clusterName}} {
+            {{#servers}}
+                server {{host}}:{{port}};
+            {{/servers}}
+                keepalive 24;
+            }
+        {{/clusters}}
+        server {
+            port 80;
+
+            {{#locations}}
+                location {{context}} {
+                {{#upstream}}
+                    proxy_pass              {{protocol}}://{{clusterName}};
+                {{/upstream}}
+                {{#attributes}}
+                    {{key}}                 {{value}}
+                {{/attributes}}
+                }
+            {{/locations}}
         }
-    {{/clusters}}
-    ...
-    {{#locations}}
-        location {{context}} {
-        {{#upstream}}
-            proxy_pass              {{protocol}}://{{clusterName}};
-        {{/upstream}}
-        {{#attributes}}
-            {{key}}                 {{value}}
-        {{/attributes}}
-        }
-    {{/locations}}
+    }
     
 With two small blocks of customizable templating, each time a node is registered or deregistered a new `nginx.conf`
 is written and nginx sent a `SIGHUP`.
@@ -35,7 +44,7 @@ is written and nginx sent a `SIGHUP`.
 Build the agent as you would normally
     mvn package
 
-A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Take this a
+A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Take this jar and put it on your NGINX servers.
 
 You can run the agent as below:
 
