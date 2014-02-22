@@ -40,6 +40,14 @@ A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Tak
 You can run the agent as below:
 
     java -jar gatekeeper.jar -c /path/to/gatekeeper.properties
+    
+I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A config for Gatekeeper looks like this:
+
+    [program:library-api]
+    directory=/opt/gatekeeper
+    command=java -Xmx128m -Xss256k -jar gatekeeper-agent.jar -c gatekeeper.properties
+    redirect_stderr=true
+    stdout_logfile=/var/log/gatekeeper.log
 
 ## Disclaimer
 
