@@ -7,18 +7,53 @@
     <groupId>com.xorlev.gatekeeper</groupId>
     <artifactId>gatekeeper</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>gatekeeper-agent</module>
         <module>gatekeeper-core</module>
         <module>gatekeeper-zookeeper</module>
     </modules>
 
+    <name>Gatekeeper</name>
+    <description>NGINX co-process for SOA architectures</description>
+    <url>http://github.com/Xorlev/gatekeeper</url>
+
+    <developers>
+        <developer>
+            <name>Michael Rose</name>
+            <email>elementation@gmail.com</email>
+            <url>http://www.xorlev.com</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <scm>
-        <connection>scm:git:git://github.com/xorlev/Gatekeeper.git</connection>
-        <url>https://github.com/xorlev/Gatekeeper</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:git@github.com:Xorlev/gatekeeper.git</connection>
+        <url>http://github.com/Xorlev/gatekeeper</url>
+        <developerConnection>scm:git:git@github.com:Xorlev/gatekeeper.git</developerConnection>
+        <tag>gatekeeper-1.0.0</tag>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>clojars</id>
+            <name>Clojars repository</name>
+            <url>https://clojars.org/repo</url>
+        </repository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>clojars</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
+    </repositories>
 
     <properties>
         <discovery.package>gatekeeper-zookeeper</discovery.package>
