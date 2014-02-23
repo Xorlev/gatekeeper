@@ -80,7 +80,7 @@ You can run the agent as below:
 
 I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A config for Gatekeeper looks like this:
 
-    [program:library-api]
+    [program:gatekeeper]
     directory=/opt/gatekeeper
     command=java -Xmx128m -Xss256k -jar gatekeeper-agent.jar -c gatekeeper.properties
     redirect_stderr=true
