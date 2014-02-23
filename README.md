@@ -50,6 +50,25 @@ do. You can even include a default upstream and default context directly in the 
 In your `gatekeeper.properties` you'll need to define clusters, which will become your NGINX upstreams. These clusters
 correspond to cluster names you've defined using your service discovery extension.
 
+The namespace is by default null, e.g. the root path. I use `/discovery`, which ensures that Curator can't accidentally delete any other znodes.
+
+Discovery Path is the znode under which all of your services then make a znode for themselves.
+
+    /discovery (namespace)
+            /services (discoveryPath)
+                    /service-a (cluster)
+                          instance-1
+                          instance-2
+                    /service-b
+                          instance-1
+                          instance-2
+                          instance-3
+
+Config for the above looks like this:
+    zookeeper.quorum=zookeeper1.mycompany.com
+    zookeeper.namespace=discovery
+    zookeeper.discoveryPath=/services
+
     # Upstreams to look for
     clusters=service-a,service-b
 
