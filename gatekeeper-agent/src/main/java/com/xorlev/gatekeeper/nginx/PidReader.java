@@ -29,7 +29,7 @@ public class PidReader {
         } catch (NumberFormatException e) {
             throw new InvalidPidException("Could not parse pid", e);
         } catch (IOException e) {
-            return -1;
+            throw new InvalidPidException("Could not read pid, " + e.getMessage(), e);
         }
     }
 }
