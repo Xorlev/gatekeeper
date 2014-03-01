@@ -8,14 +8,18 @@ import com.xorlev.gatekeeper.data.ConfigContext;
 import com.xorlev.gatekeeper.handler.ConfigWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.weakref.jmx.Managed;
 
 import javax.inject.Inject;
 import java.io.*;
+import java.util.Date;
 
 public class NginxConfigWriter implements ConfigWriter {
     private static final Logger log = LoggerFactory.getLogger(NginxConfigWriter.class);
     private final Mustache mustache;
     private Writer writer = new OutputStreamWriter(System.out);
+    int timesWritten;
+    Date lastWritten;
 
     @Inject
     public NginxConfigWriter(Writer writer) throws FileNotFoundException {
@@ -43,5 +47,18 @@ public class NginxConfigWriter implements ConfigWriter {
 
         writer = new FileWriter(filename);
         mustache.execute(writer, configContext).flush();
+
+        timesWritten++;
+        lastWritten = new Date();
+    }
+
+    @Managed
+    public int getTimesWritten() {
+        return timesWritten;
+    }
+
+    @Managed
+    public Date getLastWritten() {
+        return lastWritten;
     }
 }

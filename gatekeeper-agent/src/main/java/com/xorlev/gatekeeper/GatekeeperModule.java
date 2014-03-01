@@ -11,10 +11,13 @@ import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
 import com.xorlev.gatekeeper.handler.ConfigWriter;
 import com.xorlev.gatekeeper.nginx.NginxConfigWriter;
 import com.xorlev.gatekeeper.handler.PostConfigCallback;
+import org.weakref.jmx.guice.ExportBinder;
 
 import javax.annotation.Nullable;
+import javax.management.MBeanServer;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.List;
 
 /**
@@ -25,6 +28,10 @@ import java.util.List;
 public class GatekeeperModule extends AbstractModule {
     @Override
     protected void configure() {
+        // MBeanModule expects an MBeanServer to be bound
+        bind(MBeanServer.class).toInstance(ManagementFactory.getPlatformMBeanServer());
+        ExportBinder exporter = ExportBinder.newExporter(binder());
+
         bind(ConfigWriter.class).to(NginxConfigWriter.class).asEagerSingleton();
 
         try {
@@ -32,6 +39,9 @@ public class GatekeeperModule extends AbstractModule {
         } catch (ClassNotFoundException e) {
             throw new GatekeeperInitializationException("Failed to bind cluster discovery module", e);
         }
+
+        exporter.export(AbstractClusterDiscovery.class).withGeneratedName();
+        exporter.export(NginxConfigWriter.class).withGeneratedName();
     }
 
     @Provides
@@ -42,8 +52,19 @@ public class GatekeeperModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
     List<PostConfigCallback> provideConfigCallbacks() {
-        return Lists.newArrayList((PostConfigCallback)new NginxReloaderCallback());
+//        Iterables.transform(AppConfig.getStringList("handler.post_config_callbacks"), new Function<String, Object>() {
+//            @Override
+//            public Class<?> apply(String className) {
+//                try {
+//                    return getClass.forName(className);
+//                } catch (ClassNotFoundException e) {
+//                    throw new GatekeeperInitializationException("Failed to bind PostConfigCallback", e);
+//                }
+//            }
+//        });
+            return Lists.newArrayList((PostConfigCallback)new NginxReloaderCallback());
     }
 
 //    @Provides

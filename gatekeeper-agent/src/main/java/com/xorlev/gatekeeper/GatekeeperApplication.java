@@ -5,7 +5,6 @@ import com.beust.jcommander.Parameter;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.xorlev.gatekeeper.discovery.ClusterDiscoveryFactory;
 import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
 import com.xorlev.gatekeeper.handler.ConfigWriterClusterHandler;
 import org.weakref.jmx.MBeanExporter;
@@ -39,16 +38,9 @@ public class GatekeeperApplication {
         manager = new ServiceManager(Collections.singleton(clusterProvider));
 
         registerSignalHandler();
-        registerJmx();
 
         manager.startAsync();
         manager.awaitStopped();
-    }
-
-    private void registerJmx() {
-        MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
-        exporter.export("gatekeeper:name=clusterProvider", clusterProvider);
-        exporter.export("gatekeeper:name=serviceManager", manager);
     }
 
     private void registerSignalHandler() {
