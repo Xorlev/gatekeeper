@@ -5,7 +5,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.ConfigContext;
-import com.xorlev.gatekeeper.providers.output.ConfigWriter;
+import com.xorlev.gatekeeper.handler.ConfigWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

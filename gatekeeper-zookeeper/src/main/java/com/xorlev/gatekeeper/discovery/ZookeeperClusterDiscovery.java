@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.providers.discovery;
+package com.xorlev.gatekeeper.discovery;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -7,7 +7,6 @@ import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.framework.imps.CuratorFrameworkState;
 import com.netflix.curator.framework.state.ConnectionState;
 import com.netflix.curator.retry.BoundedExponentialBackoffRetry;
-import com.netflix.curator.retry.RetryNTimes;
 import com.netflix.curator.x.discovery.ServiceCache;
 import com.netflix.curator.x.discovery.ServiceDiscovery;
 import com.netflix.curator.x.discovery.ServiceDiscoveryBuilder;
@@ -16,9 +15,6 @@ import com.netflix.curator.x.discovery.details.ServiceCacheListener;
 import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.Server;
-import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

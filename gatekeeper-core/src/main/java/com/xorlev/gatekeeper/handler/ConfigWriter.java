@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.providers.output;
+package com.xorlev.gatekeeper.handler;
 
 import com.xorlev.gatekeeper.data.ConfigContext;
 

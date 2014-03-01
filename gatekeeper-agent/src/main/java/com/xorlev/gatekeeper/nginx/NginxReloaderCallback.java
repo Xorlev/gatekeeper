@@ -1,8 +1,8 @@
 package com.xorlev.gatekeeper.nginx;
 
 import com.xorlev.gatekeeper.AppConfig;
-import com.xorlev.gatekeeper.providers.discovery.ClustersUpdatedEvent;
-import com.xorlev.gatekeeper.providers.output.PostConfigCallback;
+import com.xorlev.gatekeeper.discovery.ClustersUpdatedEvent;
+import com.xorlev.gatekeeper.handler.PostConfigCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

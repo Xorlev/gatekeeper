@@ -1,10 +1,10 @@
-package com.xorlev.gatekeeper.providers.output;
+package com.xorlev.gatekeeper.handler;
 
 import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.ConfigContext;
 import com.xorlev.gatekeeper.data.Location;
-import com.xorlev.gatekeeper.providers.discovery.ClustersUpdatedEvent;
+import com.xorlev.gatekeeper.discovery.ClustersUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

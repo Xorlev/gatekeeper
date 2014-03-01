@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.providers.discovery;
+package com.xorlev.gatekeeper.discovery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

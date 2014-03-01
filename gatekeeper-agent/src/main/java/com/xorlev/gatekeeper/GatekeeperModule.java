@@ -1,15 +1,18 @@
 package com.xorlev.gatekeeper;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.xorlev.gatekeeper.nginx.NginxReloaderCallback;
-import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
-import com.xorlev.gatekeeper.providers.output.ConfigWriter;
+import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
+import com.xorlev.gatekeeper.handler.ConfigWriter;
 import com.xorlev.gatekeeper.nginx.NginxConfigWriter;
-import com.xorlev.gatekeeper.providers.output.PostConfigCallback;
+import com.xorlev.gatekeeper.handler.PostConfigCallback;
 
+import javax.annotation.Nullable;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -19,15 +22,15 @@ import java.util.List;
  *
  * @author Michael Rose <michael@fullcontact.com>
  */
-public class ServiceModule extends AbstractModule {
+public class GatekeeperModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ConfigWriter.class).to(NginxConfigWriter.class).asEagerSingleton();
 
         try {
-            bind(AbstractClusterDiscovery.class).to((Class<? extends AbstractClusterDiscovery>) Class.forName(AppConfig.getString("cluster_provider.impl"))).asEagerSingleton();
+            bind(AbstractClusterDiscovery.class).to((Class<? extends AbstractClusterDiscovery>) Class.forName(AppConfig.getString("discovery.impl"))).asEagerSingleton();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new GatekeeperInitializationException("Failed to bind cluster discovery module", e);
         }
     }
 

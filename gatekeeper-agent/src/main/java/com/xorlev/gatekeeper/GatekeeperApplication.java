@@ -5,9 +5,9 @@ import com.beust.jcommander.Parameter;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.xorlev.gatekeeper.providers.discovery.ClusterDiscoveryFactory;
-import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
-import com.xorlev.gatekeeper.providers.output.ConfigWriterClusterHandler;
+import com.xorlev.gatekeeper.discovery.ClusterDiscoveryFactory;
+import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
+import com.xorlev.gatekeeper.handler.ConfigWriterClusterHandler;
 import org.weakref.jmx.MBeanExporter;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -31,7 +31,7 @@ public class GatekeeperApplication {
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(configurationFile);
 
-        this.injector = Guice.createInjector(new ServiceModule());
+        this.injector = Guice.createInjector(new GatekeeperModule());
 
         clusterProvider = injector.getInstance(AbstractClusterDiscovery.class);
         clusterProvider.registerHandler(injector.getInstance(ConfigWriterClusterHandler.class));
