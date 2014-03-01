@@ -20,7 +20,7 @@ public abstract class AbstractPollingClusterDiscovery extends AbstractClusterDis
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                updateInstances();
+                updateInstances(false);
             }
         }, 1000, 10000, TimeUnit.MILLISECONDS);
     }

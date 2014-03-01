@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.manager;
+package com.xorlev.gatekeeper.nginx;
 
 import java.io.*;
 
@@ -27,7 +27,7 @@ public class PidReader {
 
             return Integer.parseInt(line);
         } catch (NumberFormatException e) {
-            return -1;
+            throw new InvalidPidException("Could not parse pid", e);
         } catch (IOException e) {
             return -1;
         }

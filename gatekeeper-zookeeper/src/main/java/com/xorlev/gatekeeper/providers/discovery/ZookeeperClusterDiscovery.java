@@ -6,6 +6,7 @@ import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.framework.imps.CuratorFrameworkState;
 import com.netflix.curator.framework.state.ConnectionState;
+import com.netflix.curator.retry.BoundedExponentialBackoffRetry;
 import com.netflix.curator.retry.RetryNTimes;
 import com.netflix.curator.x.discovery.ServiceCache;
 import com.netflix.curator.x.discovery.ServiceDiscovery;
@@ -16,20 +17,22 @@ import com.xorlev.gatekeeper.AppConfig;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.data.Server;
 import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 2013-07-27
+ * Implements push-based service discovery with Zookeeper.
  *
  * @author Michael Rose <elementation@gmail.com>
  */
 public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
     private CuratorFramework zk;
-
     private ServiceDiscovery<Void> dsc;
+
     private List<ServiceCache<Void>> serviceCacheList = Lists.newArrayList();
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
@@ -38,7 +41,7 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
     public void startUp() throws Exception {
         setupZookeeper();
         setupServiceDiscovery();
-        updateInstances();
+        updateInstances(false);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
         zk = CuratorFrameworkFactory.builder()
                 .connectString(quorum)
                 .connectionTimeoutMs(2000)
-                .retryPolicy(new RetryNTimes(6, 1000))
+                .retryPolicy(new BoundedExponentialBackoffRetry(100, 10000, 100))
                 .namespace(namespace.isEmpty() ? null : namespace)
                 .build();
 
@@ -75,6 +78,10 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
             dsc.start();
 
             initializeServiceCaches();
+
+
+            // If clusters change, re-init our service caches and config.
+            AppConfig.addCallback("clusters", new ReInitRunnable());
         }
     }
 
@@ -89,10 +96,11 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
         for (final String c : AppConfig.getStringList("clusters")) {
             ServiceCache<Void> cache = dsc.serviceCacheBuilder().name(c).build();
 
+            // Whenever a cluster is modified, notify handlers
             cache.addListener(new ServiceCacheListener() {
                 public void cacheChanged() {
                     log.info("Service {} modified, rewriting config", c);
-                    updateInstances();
+                    updateInstances(false);
                 }
 
                 public void stateChanged(CuratorFramework curatorFramework, ConnectionState connectionState) {
@@ -103,33 +111,13 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
             serviceCacheList.add(cache);
 
             // If context changes, rebuild config
-            AppConfig.addCallback("cluster." + c + ".context", new Runnable() {
-                public void run() {
-                    try {
-                        updateInstances();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            AppConfig.addCallback("cluster." + c + ".context", new ReInitRunnable());
 
         }
-
-        // If clusters change, re-init our service caches and config.
-        AppConfig.addCallback("clusters", new Runnable() {
-            public void run() {
-                try {
-                    initializeServiceCaches();
-                    updateInstances();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     @Override
-    public List<Cluster> clusters() {
+    public List<Cluster> getClusters() {
         List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
         for (ServiceCache<Void> cache : serviceCacheList) {
             if (!cache.getInstances().isEmpty()) {
@@ -161,4 +149,13 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
         return new Server(instance.getAddress(), port);
     }
 
+    class ReInitRunnable implements Runnable {
+        public void run() {
+            try {
+                updateInstances(false);
+            } catch (Exception e) {
+                log.error("Error re-initializing with new configuration, {}", e.getMessage(), e);
+            }
+        }
+    }
 }

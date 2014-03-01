@@ -3,12 +3,16 @@ package com.xorlev.gatekeeper;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.util.concurrent.ServiceManager;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.xorlev.gatekeeper.providers.discovery.ClusterDiscoveryFactory;
 import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
-import com.xorlev.gatekeeper.providers.output.NginxFactory;
+import com.xorlev.gatekeeper.providers.output.ConfigWriterClusterHandler;
+import org.weakref.jmx.MBeanExporter;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
+import java.lang.management.ManagementFactory;
 import java.util.Collections;
 
 /**
@@ -17,6 +21,7 @@ import java.util.Collections;
  * @author Michael Rose <elementation@gmail.com>
  */
 public class GatekeeperApplication {
+    private final Injector injector;
     @Parameter(names = {"--config", "-c"}, description = "Config file to load")
     private String configurationFile = "gatekeeper.properties";
 
@@ -26,15 +31,24 @@ public class GatekeeperApplication {
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(configurationFile);
 
-        clusterProvider = ClusterDiscoveryFactory.providerFor(AppConfig.getString("cluster_provider.impl"));
-        clusterProvider.registerHandler(NginxFactory.clusterHandler());
+        this.injector = Guice.createInjector(new ServiceModule());
+
+        clusterProvider = injector.getInstance(AbstractClusterDiscovery.class);
+        clusterProvider.registerHandler(injector.getInstance(ConfigWriterClusterHandler.class));
 
         manager = new ServiceManager(Collections.singleton(clusterProvider));
 
         registerSignalHandler();
+        registerJmx();
 
         manager.startAsync();
         manager.awaitStopped();
+    }
+
+    private void registerJmx() {
+        MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
+        exporter.export("gatekeeper:name=clusterProvider", clusterProvider);
+        exporter.export("gatekeeper:name=serviceManager", manager);
     }
 
     private void registerSignalHandler() {
@@ -50,7 +64,7 @@ public class GatekeeperApplication {
         Signal.handle(new Signal("HUP"), new SignalHandler() {
             public void handle(Signal signal) {
                 try {
-                    clusterProvider.updateInstances();
+                    clusterProvider.forceUpdate();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

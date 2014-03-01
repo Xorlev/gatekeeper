@@ -3,6 +3,7 @@ package com.xorlev.gatekeeper.data;
 import com.google.common.collect.Sets;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Set;
  * @author Michael Rose <elementation@gmail.com>
  */
 @Data
-public class Cluster {
+public class Cluster implements Serializable {
     String protocol = "http";
     String clusterName;
     Integer port = 80;

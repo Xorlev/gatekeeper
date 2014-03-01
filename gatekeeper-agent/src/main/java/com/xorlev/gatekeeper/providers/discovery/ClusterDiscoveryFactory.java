@@ -1,7 +1,5 @@
 package com.xorlev.gatekeeper.providers.discovery;
 
-import com.xorlev.gatekeeper.providers.discovery.AbstractClusterDiscovery;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 

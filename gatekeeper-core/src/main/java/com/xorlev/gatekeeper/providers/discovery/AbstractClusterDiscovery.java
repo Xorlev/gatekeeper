@@ -7,6 +7,7 @@ import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.providers.output.ClusterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.weakref.jmx.Managed;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,19 +30,26 @@ public abstract class AbstractClusterDiscovery extends AbstractIdleService {
 
     public abstract void shutDown() throws Exception;
 
-    public void updateInstances() {
-        List<Cluster> clusterList = clusters();
+    @Managed(description = "Rewrite NGINX configuration")
+    public void forceUpdate() {
+        updateInstances(true);
+    }
 
-        if (previousClusterList != clusterList) {
+    protected void updateInstances(boolean force) {
+        List<Cluster> clusterList = getClusters();
+
+        if (force || previousClusterList != clusterList) {
             for (ClusterHandler clusterHandler : clusterHandlers) {
                 clusterHandler.processClusters(new ClustersUpdatedEvent(clusterList));
             }
         }
     }
 
-    public abstract List<Cluster> clusters();
+    @Managed
+    public abstract List<Cluster> getClusters();
 
-    public List<ClusterHandler> handlers() {
+    @Managed
+    public List<ClusterHandler> getHandlers() {
         return ImmutableList.copyOf(clusterHandlers);
     }
 

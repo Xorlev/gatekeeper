@@ -3,6 +3,7 @@ package com.xorlev.gatekeeper.data;
 import com.google.common.collect.Lists;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  * @author Michael Rose <elementation@gmail.com>
  */
 @Data
-public class ConfigContext {
+public class ConfigContext implements Serializable {
     List<Cluster> clusters = Lists.newArrayList();
     List<Location> locations = Lists.newArrayList();
 

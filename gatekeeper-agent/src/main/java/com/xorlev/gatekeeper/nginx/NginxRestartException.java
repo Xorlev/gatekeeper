@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.manager;
+package com.xorlev.gatekeeper.nginx;
 
 /**
  * 2013-09-18

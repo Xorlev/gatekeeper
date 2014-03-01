@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
  * @author Michael Rose <elementation@gmail.com>
  */
 @Data
-public class Location {
+public class Location implements Serializable {
     @NonNull String context;
     @NonNull Cluster upstream;
     Map<String,String> attributes = Maps.newHashMap();

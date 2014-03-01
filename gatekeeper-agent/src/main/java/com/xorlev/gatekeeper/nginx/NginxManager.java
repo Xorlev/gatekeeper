@@ -1,11 +1,10 @@
-package com.xorlev.gatekeeper.manager;
+package com.xorlev.gatekeeper.nginx;
 
 import com.google.common.io.CharStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -33,8 +32,10 @@ public class NginxManager {
             if (code != 0) throw new NginxRestartException("Process restart command returned code " + code);
 
             return code;
+        } catch (NginxRestartException e) {
+            throw e;
         } catch (Exception e) {
-            log.error("Error attempting to restart NGINX: " + e.getMessage(), e);
+            log.error("Uncaught error attempting to restart NGINX: " + e.getMessage(), e);
             return 1;
         }
     }
