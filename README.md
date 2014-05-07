@@ -43,14 +43,18 @@ is written and NGINX sent a `SIGHUP`.
 You'll need a NGINX config template and a `gatekeeper.properties`. There are defaults included in `nginx.conf.mustache.default`
 and `gatekeeper.properties.default`.
 
+**Important:** Configuration changes are automatically reloaded. This may change in the future to require a SIGHUP.
+
 Any additional configuration (e.g. FQDN, SSL, listeners, etc.) can be done in nginx.conf as you'd normally
 do. You can even include a default upstream and default context directly in the template.
+
+Your `gatekeeper.properties` and `nginx.conf.mustache` should be managed by a configuration management platform, e.g. Chef/Ansible/Puppet.
 
 ### Clusters & Routing
 In your `gatekeeper.properties` you'll need to define clusters, which will become your NGINX upstreams. These clusters
 correspond to cluster names you've defined using your service discovery extension.
 
-The namespace is by default null, e.g. the root path. I use `/discovery`, which ensures that Curator can't accidentally delete any other znodes.
+The namespace is by default null, e.g. the root path. I use `/discovery`, which ensures that Curator can't accidentally have any namespace collisions with other services.
 
 Discovery Path is the znode under which all of your services then make a znode for themselves.
 
@@ -65,6 +69,7 @@ Discovery Path is the znode under which all of your services then make a znode f
                           instance-3
 
 Config for the above looks like this:
+
     zookeeper.quorum=zookeeper1.mycompany.com
     zookeeper.namespace=discovery
     zookeeper.discoveryPath=/services
@@ -114,9 +119,7 @@ Send a SIGHUP to the Gatekeeper process.
 You should see a message in the log.
 
 ## Maven
-You'll generally want to compile this yourself, but it's available on Clojars if you want:
-
-Core:
+You'll generally want to compile this yourself, but core is available on Clojars for extension building:
 
     <dependency>
         <groupId>com.xorlev.gatekeeper</groupId>
@@ -128,6 +131,10 @@ Core:
 
 Currently only supports Netflix Curator Service Discovery Extensions. Other implementations are trivial and can be
  implemented by including `gatekeeper-core`, and including your dependency in the resulting gatekeeper-agent build.
+ 
+You can build gatekeeper with a different module like so:
+
+    mvn package -Ddependency.package=gatekeeper-new-discovery
 
 ## FAQ
 
