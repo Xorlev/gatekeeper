@@ -4,7 +4,7 @@ Gatekeeper turns NGINX into your edge service. Gatekeeper watches your [Zookeepe
 discovery paths and dynamically builds NGINX upstreams for them. Load balancers (ELBs especially) can be SPOFs and are
 the first steps to madness. Cut out the middle man and let NGINX manage your upstream load balancing. 
 
-Gatekeeper uses [Mustache.js](http://mustache.github.io) templates to build upstreams and locations using your
+Gatekeeper uses [Mustache](http://mustache.github.io) templates to build upstreams and locations using your
 existing `nginx.conf`.
 
     events {
@@ -109,6 +109,10 @@ I prefer to run Gatekeeper under [Supervisord](http://supervisord.org/). A confi
     command=java -Xmx128m -Xss256k -jar gatekeeper-agent.jar -c gatekeeper.properties
     redirect_stderr=true
     stdout_logfile=/var/log/gatekeeper.log
+    
+### Config management
+
+It's also quite helpful to have centralized configuration management. Changes to the NGINX template can be made via Chef cookbook, or Ansible Playbook. Gatekeeper does not come with any configuration management utilities.
 
 ### Forcing a rewrite
 
