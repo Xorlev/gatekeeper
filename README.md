@@ -90,7 +90,7 @@ Build the agent as you would normally
 
     mvn package
 
-A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.0.jar`. Take this jar and put it on your NGINX servers.
+A jar will be built in `gatekeeper-agent/target/gatekeeper-agent-1.0.1.jar`. Take this jar and put it on your NGINX servers.
 
 You can run the agent as below:
 
@@ -128,7 +128,7 @@ You'll generally want to compile this yourself, but core is available on Clojars
     <dependency>
         <groupId>com.xorlev.gatekeeper</groupId>
         <artifactId>gatekeeper-core</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 
 ## Service Discovery Implementations
@@ -138,7 +138,7 @@ Currently only supports Netflix Curator Service Discovery Extensions. Other impl
  
 You can build gatekeeper with a different module like so:
 
-    mvn package -Ddependency.package=gatekeeper-new-discovery
+    mvn package -discovery.package=gatekeeper-some-discovery-module
 
 ## FAQ
 
@@ -147,7 +147,7 @@ I'm not good at C, I believe I'd make a leaky C-module. I am confident in my abi
 Additionally, Netflix's Curator library is also top-notch, better than any stock Zookeeper library around.
 
 ##License
-Copyright 2013 Michael Rose
+Copyright 2014 Michael Rose
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the
  License. You may obtain a copy of the License in the LICENSE file, or at:
