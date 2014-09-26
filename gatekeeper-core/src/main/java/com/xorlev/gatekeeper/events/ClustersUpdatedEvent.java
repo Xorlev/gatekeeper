@@ -1,4 +1,4 @@
-package com.xorlev.gatekeeper.discovery;
+package com.xorlev.gatekeeper.events;
 
 import com.google.common.collect.ImmutableList;
 import com.xorlev.gatekeeper.data.Cluster;

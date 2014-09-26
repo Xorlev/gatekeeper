@@ -107,8 +107,8 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
             serviceCacheList.add(cache);
 
             // If context changes, rebuild config
+            // TODO move cluster config to its own package & producer
             AppConfig.addCallback("cluster." + c + ".context", new ReInitRunnable());
-
         }
     }
 

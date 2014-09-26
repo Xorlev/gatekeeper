@@ -3,9 +3,15 @@ package com.xorlev.gatekeeper;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.spi.InjectionListener;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 import com.xorlev.gatekeeper.nginx.NginxReloaderCallback;
 import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
 import com.xorlev.gatekeeper.handler.ConfigWriter;
@@ -15,6 +21,7 @@ import org.weakref.jmx.guice.ExportBinder;
 
 import javax.annotation.Nullable;
 import javax.management.MBeanServer;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -40,20 +47,36 @@ public class GatekeeperModule extends AbstractModule {
             throw new GatekeeperInitializationException("Failed to bind cluster discovery module", e);
         }
 
+        setupEventBus();
+
         exporter.export(AbstractClusterDiscovery.class).withGeneratedName();
         exporter.export(NginxConfigWriter.class).withGeneratedName();
+    }
+
+    private void setupEventBus() {
+        final EventBus eventBus = new EventBus();
+        bind(EventBus.class).toInstance(eventBus);
+        bindListener(
+                Matchers.any(), new TypeListener() {
+                         public <I> void hear(TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
+                             typeEncounter.register(new InjectionListener<I>() {
+                                                        public void afterInjection(I i) {
+                                                            eventBus.register(i);
+                                                        }
+                                                    });
+                         }
+                     });
     }
 
     @Provides
     @Singleton
     NginxConfigWriter providesNginxConfigWriter() throws IOException {
-        String filename = AppConfig.getString("nginx.config-file");
-        return new NginxConfigWriter(new FileWriter(filename));
+        return new NginxConfigWriter();
     }
 
     @Provides
     @Singleton
-    List<PostConfigCallback> provideConfigCallbacks() {
+    List<PostConfigCallback> provideConfigCallbacks() throws FileNotFoundException {
 //        Iterables.transform(AppConfig.getStringList("handler.post_config_callbacks"), new Function<String, Object>() {
 //            @Override
 //            public Class<?> apply(String className) {

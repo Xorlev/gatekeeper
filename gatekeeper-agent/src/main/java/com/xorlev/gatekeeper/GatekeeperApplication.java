@@ -6,12 +6,10 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
-import com.xorlev.gatekeeper.handler.ConfigWriterClusterHandler;
-import org.weakref.jmx.MBeanExporter;
+import com.xorlev.gatekeeper.handler.ConfigurationChangedEventHandler;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-import java.lang.management.ManagementFactory;
 import java.util.Collections;
 
 /**
@@ -25,17 +23,16 @@ public class GatekeeperApplication {
     private String configurationFile = "gatekeeper.properties";
 
     private ServiceManager manager;
-    private AbstractClusterDiscovery clusterProvider;
+    private AbstractClusterDiscovery discovery;
 
     public GatekeeperApplication() throws Exception {
         AppConfig.initializeConfiguration(configurationFile);
 
         this.injector = Guice.createInjector(new GatekeeperModule());
 
-        clusterProvider = injector.getInstance(AbstractClusterDiscovery.class);
-        clusterProvider.registerHandler(injector.getInstance(ConfigWriterClusterHandler.class));
+        discovery = injector.getInstance(AbstractClusterDiscovery.class);
 
-        manager = new ServiceManager(Collections.singleton(clusterProvider));
+        manager = new ServiceManager(Collections.singleton(discovery));
 
         registerSignalHandler();
 
@@ -56,7 +53,7 @@ public class GatekeeperApplication {
         Signal.handle(new Signal("HUP"), new SignalHandler() {
             public void handle(Signal signal) {
                 try {
-                    clusterProvider.forceUpdate();
+                    discovery.forceUpdate();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

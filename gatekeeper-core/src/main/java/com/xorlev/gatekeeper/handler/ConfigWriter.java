@@ -1,6 +1,6 @@
 package com.xorlev.gatekeeper.handler;
 
-import com.xorlev.gatekeeper.data.ConfigContext;
+import com.xorlev.gatekeeper.events.ConfigChangedEvent;
 
 import java.io.IOException;
 
@@ -10,5 +10,5 @@ import java.io.IOException;
  * @author Michael Rose <michael@fullcontact.com>
  */
 public interface ConfigWriter {
-    void writeConfig(ConfigContext configContext) throws IOException;
+    void writeConfig(ConfigChangedEvent configChangedEvent) throws IOException;
 }

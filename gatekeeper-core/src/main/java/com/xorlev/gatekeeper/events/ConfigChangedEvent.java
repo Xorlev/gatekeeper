@@ -1,6 +1,8 @@
-package com.xorlev.gatekeeper.data;
+package com.xorlev.gatekeeper.events;
 
 import com.google.common.collect.Lists;
+import com.xorlev.gatekeeper.data.Cluster;
+import com.xorlev.gatekeeper.data.Location;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,15 +14,15 @@ import java.util.List;
  * @author Michael Rose <elementation@gmail.com>
  */
 @Data
-public class ConfigContext implements Serializable {
+public class ConfigChangedEvent implements Serializable {
     List<Cluster> clusters = Lists.newArrayList();
     List<Location> locations = Lists.newArrayList();
 
-    public ConfigContext(Cluster cluster) {
+    public ConfigChangedEvent(Cluster cluster) {
         this.clusters.add(cluster);
     }
 
-    public ConfigContext(List<Cluster> clusters) {
+    public ConfigChangedEvent(List<Cluster> clusters) {
         this.clusters.addAll(clusters);
     }
 }
