@@ -14,3 +14,11 @@ logs
 out
 .DS_Store
 classes
+/nginx.conf.mustache
+/gatekeeper.properties
+
+**/.project
+.project
+
+**/.settings
+.settings
