@@ -9,5 +9,9 @@ import lombok.Value;
  */
 @Value
 public class ConfigWrittenEvent {
-    private final ClustersUpdatedEvent event;
+    private ClustersUpdatedEvent event;
+    
+    public ConfigWrittenEvent(ClustersUpdatedEvent event) {
+    	this.event = event;
+    }
 }
