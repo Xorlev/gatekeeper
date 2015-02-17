@@ -3,6 +3,7 @@ events {
 }
 
 http {
+########### Start Upstreams controlled by Zookeeper Watcher ###########################
     {{#clusters}}
         upstream {{clusterName}} {
         {{#servers}}
@@ -10,11 +11,13 @@ http {
         {{/servers}}
         }
     {{/clusters}}
+########### End Upstreams controlled by Zookeeper Watcher ###########################
 
     server {
         listen 80;
         server_name myserver.com;
 
+########### Start Locations controlled by Zookeeper Watcher ###########################
         {{#locations}}
             location {{context}} {
             {{#upstream}}
@@ -25,6 +28,7 @@ http {
             {{/attributes}}
             }
         {{/locations}}
+########### End Locations controlled by Zookeeper Watcher ###########################
 
         # Can mix and match hard-coded locations too
         location /check {

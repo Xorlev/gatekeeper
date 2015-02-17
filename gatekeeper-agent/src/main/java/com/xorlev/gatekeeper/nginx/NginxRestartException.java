@@ -6,7 +6,10 @@ package com.xorlev.gatekeeper.nginx;
  * @author Michael Rose <elementation@gmail.com>
  */
 public class NginxRestartException extends RuntimeException {
-    public NginxRestartException(String message) {
+
+	private static final long serialVersionUID = 6086536272104191176L;
+
+	public NginxRestartException(String message) {
         super(message);
     }
 

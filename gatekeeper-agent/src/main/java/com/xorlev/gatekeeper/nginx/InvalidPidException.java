@@ -6,7 +6,10 @@ package com.xorlev.gatekeeper.nginx;
  * @author Michael Rose <michael@fullcontact.com>
  */
 public class InvalidPidException extends RuntimeException {
-    public InvalidPidException(String message, Throwable cause) {
+
+	private static final long serialVersionUID = 6389211532274680422L;
+
+	public InvalidPidException(String message, Throwable cause) {
         super(message, cause);
     }
 }

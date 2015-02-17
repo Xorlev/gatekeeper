@@ -13,7 +13,10 @@ import java.util.Set;
  */
 @Data
 public class Cluster implements Serializable {
-    String protocol = "http";
+
+	private static final long serialVersionUID = 8697433390465500176L;
+	
+	String protocol = "http";
     String clusterName;
     Integer port = 80;
     Set<Server> servers = Sets.newHashSet();

@@ -35,7 +35,7 @@ public class NginxManager {
             int code = process.waitFor();
             String output = CharStreams.toString(new InputStreamReader(process.getInputStream()));
 
-            log.info("HUP returned with {}", code);
+            log.info("HUP returned with code {}  and output {}", code, output);
 
             if (code != 0) throw new NginxRestartException("Process restart command returned code " + code);
 

@@ -11,7 +11,10 @@ import java.io.Serializable;
  */
 @Data
 public class Server implements Serializable {
-    String host;
+
+	private static final long serialVersionUID = 4143914026124243782L;
+	
+	String host;
     Integer port;
 
     public Server(String host, Integer port) {

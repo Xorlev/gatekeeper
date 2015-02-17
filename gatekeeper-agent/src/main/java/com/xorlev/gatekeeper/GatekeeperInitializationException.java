@@ -6,7 +6,10 @@ package com.xorlev.gatekeeper;
  * @author Michael Rose <michael@fullcontact.com>
  */
 public class GatekeeperInitializationException extends RuntimeException {
-    public GatekeeperInitializationException(String message) {
+
+	private static final long serialVersionUID = -2572438987587452102L;
+
+	public GatekeeperInitializationException(String message) {
         super(message);
     }
 

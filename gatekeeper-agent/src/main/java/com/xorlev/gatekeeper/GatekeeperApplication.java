@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
-import com.xorlev.gatekeeper.handler.ConfigurationChangedEventHandler;
+
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 

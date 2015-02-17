@@ -1,7 +1,5 @@
 package com.xorlev.gatekeeper;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
@@ -19,10 +17,8 @@ import com.xorlev.gatekeeper.nginx.NginxConfigWriter;
 import com.xorlev.gatekeeper.handler.PostConfigCallback;
 import org.weakref.jmx.guice.ExportBinder;
 
-import javax.annotation.Nullable;
 import javax.management.MBeanServer;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.List;

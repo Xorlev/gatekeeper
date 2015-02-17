@@ -15,7 +15,10 @@ import java.util.List;
  */
 @Data
 public class ConfigChangedEvent implements Serializable {
-    List<Cluster> clusters = Lists.newArrayList();
+	
+	private static final long serialVersionUID = 3154349549457307224L;
+	
+	List<Cluster> clusters = Lists.newArrayList();
     List<Location> locations = Lists.newArrayList();
 
     public ConfigChangedEvent(Cluster cluster) {

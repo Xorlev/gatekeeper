@@ -14,7 +14,10 @@ import java.util.Map;
  */
 @Data
 public class Location implements Serializable {
-    @NonNull String context;
+
+	private static final long serialVersionUID = -2376121548547370212L;
+	
+	@NonNull String context;
     @NonNull Cluster upstream;
     Map<String,String> attributes = Maps.newHashMap();
 }

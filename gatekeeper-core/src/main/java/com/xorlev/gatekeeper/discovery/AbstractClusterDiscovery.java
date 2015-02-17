@@ -1,13 +1,10 @@
 package com.xorlev.gatekeeper.discovery;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.xorlev.gatekeeper.data.Cluster;
 import com.xorlev.gatekeeper.events.ClustersUpdatedEvent;
-import com.xorlev.gatekeeper.handler.ClusterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.weakref.jmx.Managed;

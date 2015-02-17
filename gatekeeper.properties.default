@@ -1,5 +1,6 @@
 # Cluster provider impl to use
 cluster_provider.impl=com.xorlev.gatekeeper.providers.discovery.ZookeeperClusterDiscovery
+discovery.impl=com.xorlev.gatekeeper.providers.discovery.ZookeeperClusterDiscovery
 
 ################################################
 # Only applicable for ZookeeperClusterProvider #
