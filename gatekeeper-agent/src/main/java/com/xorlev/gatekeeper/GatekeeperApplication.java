@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.xorlev.gatekeeper.discovery.AbstractClusterDiscovery;
+import com.xorlev.gatekeeper.handler.ConfigurationChangedEventHandler;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -31,6 +32,7 @@ public class GatekeeperApplication {
         this.injector = Guice.createInjector(new GatekeeperModule());
 
         discovery = injector.getInstance(AbstractClusterDiscovery.class);
+        injector.getInstance(ConfigurationChangedEventHandler.class);
 
         manager = new ServiceManager(Collections.singleton(discovery));
 

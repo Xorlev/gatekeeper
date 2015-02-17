@@ -2,8 +2,9 @@ package com.xorlev.gatekeeper.nginx;
 
 import com.google.common.eventbus.Subscribe;
 import com.xorlev.gatekeeper.AppConfig;
-import com.xorlev.gatekeeper.events.ClustersUpdatedEvent;
+import com.xorlev.gatekeeper.events.ConfigWrittenEvent;
 import com.xorlev.gatekeeper.handler.PostConfigCallback;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ public class NginxReloaderCallback implements PostConfigCallback {
 
     @Subscribe
     @Override
-    public void onConfigFinished(ClustersUpdatedEvent event) {
+    public void onConfigFinished(ConfigWrittenEvent event) {
         try {
             nginxManager.reloadNginx();
         } catch (InvalidPidException | FileNotFoundException e) {
