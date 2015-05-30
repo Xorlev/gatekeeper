@@ -25,4 +25,8 @@ public class ConfigChangedEvent implements Serializable {
     public ConfigChangedEvent(List<Cluster> clusters) {
         this.clusters.addAll(clusters);
     }
+
+    public List<Location> getLocations() {
+        return locations;
+    }
 }

@@ -17,4 +17,9 @@ public class Location implements Serializable {
     @NonNull String context;
     @NonNull Cluster upstream;
     Map<String,String> attributes = Maps.newHashMap();
+
+    public Location(String context, Cluster cluster) {
+        this.context = context;
+        this.upstream = cluster;
+    }
 }
