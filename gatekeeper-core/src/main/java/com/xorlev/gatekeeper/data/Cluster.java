@@ -21,4 +21,24 @@ public class Cluster implements Serializable {
     public Cluster(String clusterName) {
         this.clusterName = clusterName;
     }
+
+    public Set<Server> getServers() {
+        return servers;
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
 }
