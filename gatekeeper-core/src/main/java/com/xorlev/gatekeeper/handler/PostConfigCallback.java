@@ -1,6 +1,6 @@
 package com.xorlev.gatekeeper.handler;
 
-import com.xorlev.gatekeeper.events.ClustersUpdatedEvent;
+import com.xorlev.gatekeeper.events.ConfigWrittenEvent;
 
 /**
  * 2014-03-01
@@ -8,5 +8,5 @@ import com.xorlev.gatekeeper.events.ClustersUpdatedEvent;
  * @author Michael Rose <michael@fullcontact.com>
  */
 public interface PostConfigCallback {
-    void onConfigFinished(ClustersUpdatedEvent event);
+    void onConfigFinished(ConfigWrittenEvent event);
 }

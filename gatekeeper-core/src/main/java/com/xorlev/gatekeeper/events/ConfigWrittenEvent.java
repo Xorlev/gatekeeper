@@ -3,7 +3,7 @@ package com.xorlev.gatekeeper.events;
 import lombok.Value;
 
 /**
- * 2014-09-25
+ * Event emitted after configuration has been written to disk
  *
  * @author Michael Rose <michael@fullcontact.com>
  */

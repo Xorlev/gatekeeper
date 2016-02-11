@@ -3,16 +3,14 @@ package com.xorlev.gatekeeper.nginx;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.xorlev.gatekeeper.AppConfig;
-import com.xorlev.gatekeeper.events.ConfigChangedEvent;
+import com.xorlev.gatekeeper.data.RoutingConfiguration;
 import com.xorlev.gatekeeper.handler.ConfigWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.weakref.jmx.Managed;
 
-import javax.inject.Inject;
 import java.io.*;
 import java.util.Date;
 
@@ -40,12 +38,12 @@ public class NginxConfigWriter implements ConfigWriter {
 
     @Subscribe
     @Override
-    public void writeConfig(ConfigChangedEvent configChangedEvent) throws IOException {
+    public void writeConfig(RoutingConfiguration routingConfiguration) throws IOException {
         String filename = AppConfig.getString("nginx.config-file");
 
         log.info("Flushing NGINX config to {}", filename);
 
-        mustache.execute(new FileWriter(filename), configChangedEvent).flush();
+        mustache.execute(new FileWriter(filename), routingConfiguration).flush();
 
         timesWritten++;
         lastWritten = new Date();
