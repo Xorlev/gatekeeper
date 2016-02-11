@@ -1,5 +1,6 @@
 package com.xorlev.gatekeeper.discovery;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.xorlev.gatekeeper.AppConfig;
@@ -27,9 +28,9 @@ import java.util.concurrent.Executors;
  */
 public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
     private CuratorFramework zk;
-    private ServiceDiscovery<Void> dsc;
+    private ServiceDiscovery<?> dsc;
 
-    private List<ServiceCache<Void>> serviceCacheList = Lists.newArrayList();
+    private List<ServiceCache<?>> serviceCacheList = Lists.newArrayList();
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -83,14 +84,14 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
 
     private void initializeServiceCaches() throws Exception {
         // Close any caches (if exists)
-        for (ServiceCache<Void> cache : serviceCacheList) {
+        for (ServiceCache<?> cache : serviceCacheList) {
             cache.close();
         }
         serviceCacheList = Lists.newArrayList();
 
         // Grab each cluster, build a service cache, and add listeners to update config file
         for (final String c : AppConfig.getStringList("clusters")) {
-            ServiceCache<Void> cache = dsc.serviceCacheBuilder().name(c).build();
+            ServiceCache<?> cache = dsc.serviceCacheBuilder().name(c).build();
 
             // Whenever a cluster is modified, notify handlers
             cache.addListener(new ServiceCacheListener() {
@@ -115,11 +116,11 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
     @Override
     public List<Cluster> getClusters() {
         List<Cluster> clusterList = Lists.newArrayListWithExpectedSize(serviceCacheList.size());
-        for (ServiceCache<Void> cache : serviceCacheList) {
+        for (ServiceCache<?> cache : serviceCacheList) {
             if (!cache.getInstances().isEmpty()) {
-                Cluster cluster = clusterFromInstance(cache.getInstances().get(0));
+                Cluster cluster = clusterFromInstances(cache.getInstances());
 
-                for (ServiceInstance<Void> instance : cache.getInstances()) {
+                for (ServiceInstance<?> instance : cache.getInstances()) {
                     cluster.getServers().add(convertInstance(instance));
                 }
 
@@ -131,16 +132,25 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
         return clusterList;
     }
 
-    private Cluster clusterFromInstance(ServiceInstance<Void> instance) {
-        Cluster cluster = new Cluster(instance.getName());
-        if (instance.getSslPort() != null) {
-            cluster.setProtocol("https");
+    private <T> Cluster clusterFromInstances(List<ServiceInstance<T>> instances) {
+        ImmutableList.Builder<Server> servers = ImmutableList.builder();
+        for (ServiceInstance<?> instance : instances) {
+            servers.add(convertInstance(instance));
         }
 
-        return cluster;
+        ServiceInstance<?> instance = instances.get(0);
+
+        // TODO 2016-02-10 -- support new Curator fields, e.g. ServiceType
+        return Cluster
+            .builder()
+            .clusterName(instance.getName())
+            .protocol(instance.getSslPort() != null ? "https" : "http")
+            .port(instance.getPort())
+            .servers(servers.build())
+            .build();
     }
 
-    private Server convertInstance(ServiceInstance<Void> instance) {
+    protected Server convertInstance(ServiceInstance<?> instance) {
         Integer port = instance.getSslPort() != null ? instance.getSslPort() : instance.getPort();
         return new Server(instance.getAddress(), port);
     }
@@ -153,5 +163,28 @@ public class ZookeeperClusterDiscovery extends AbstractClusterDiscovery {
                 log.error("Error re-initializing with new configuration, {}", e.getMessage(), e);
             }
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        CuratorFramework zk = CuratorFrameworkFactory.builder()
+                                    .connectString("127.0.0.1")
+                                    .connectionTimeoutMs(2000)
+                                    .retryPolicy(new BoundedExponentialBackoffRetry(100, 10000, 100))
+                                    .namespace("discovery")
+                                    .build();
+
+        zk.start();
+
+        ServiceDiscovery<Void> dsc = ServiceDiscoveryBuilder.builder(Void.class)
+                                     .basePath("turbine-aggregate")
+                                     .client(zk)
+                                     .build();
+
+        dsc.start();
+
+        dsc.registerService(ServiceInstance.<Void>builder().id("a").name("person-service-prod")
+                                           .address
+            ("128.0.0.1").port
+            (6667).build());
     }
 }
