@@ -57,7 +57,7 @@
 	<properties>
 		<discovery.package>gatekeeper-zookeeper</discovery.package>
 		<guava.version>18.0</guava.version>
-		<guice.version>4.0-beta</guice.version>
+		<guice.version>4.0</guice.version>
 		<logback.version>1.0.13</logback.version>
 		<lombok.version>1.16.6</lombok.version>
 		<archaius.version>0.5.11</archaius.version>
