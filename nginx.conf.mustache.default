@@ -3,6 +3,7 @@ events {
 }
 
 http {
+# ===START GATEKEEPER UPSTREAMS===
     {{#clusters}}
         upstream {{clusterName}} {
         {{#servers}}
@@ -10,11 +11,13 @@ http {
         {{/servers}}
         }
     {{/clusters}}
+# ===END GATEKEEPER UPSTREAMS===
 
     server {
         listen 80;
         server_name myserver.com;
 
+# ===START GATEKEEPER LOCATIONS===
         {{#locations}}
             location {{context}} {
             {{#upstream}}
@@ -25,6 +28,7 @@ http {
             {{/attributes}}
             }
         {{/locations}}
+# ===END GATEKEEPER LOCATIONS===
 
         # Can mix and match hard-coded locations too
         location /check {
