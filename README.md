@@ -1,4 +1,4 @@
-#Gatekeeper: NGINX co-process for SOA-style infrastructures
+# Gatekeeper: NGINX co-process for SOA-style infrastructures
 
 Gatekeeper turns NGINX into your edge service. Gatekeeper watches your [Zookeeper](http://zookeeper.apache.org/) service
 discovery paths and dynamically builds NGINX upstreams for them. Load balancers (ELBs especially) can be SPOFs and are
@@ -146,7 +146,7 @@ You can build gatekeeper with a different module like so:
 I'm not good at C, I believe I'd make a leaky C-module. I am confident in my ability to write a stable Java co-process.
 Additionally, Netflix's Curator library is also top-notch, better than any stock Zookeeper library around.
 
-##License
+## License
 Copyright 2014 Michael Rose
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the
